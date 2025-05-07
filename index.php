@@ -4,25 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CarShroom</title>
-</head>
-<body>
-    <?php include "inc/navbar.php" ?>
-
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        
         .carousel-container {
             position: relative;
-            max-width: 1024px;
-            margin: 30px auto;
+            width: 100vw;
+            height: 500px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            height: 300px;
         }
         
         .carousel {
             display: flex;
             width: 400%;
-            height: 300px;
-            transition: transform 0.5s ease-in-out;
+            height: 100%;
+            transition: transform 0.8s ease-in-out;
         }
         
         .slide {
@@ -35,21 +40,35 @@
         
         .slide-content {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            padding: 20px;
-            color: white;
-            width: 100%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            bottom: 15%;
+            left: 10%;
+            color: #fff !important;
+            max-width: 60%;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); 
         }
-        
+
+        .slide-content h3 {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #fff !important;
+            opacity: 1 !important;
+        }
+
         .slide-content h2 {
-            font-size: 24px;
-            margin-bottom: 5px;
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: #fff !important;
+            opacity: 1 !important;
         }
-        
+
         .slide-content p {
-            font-size: 18px;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #fff !important;
+            opacity: 1 !important;
         }
         
         .nav-button {
@@ -58,7 +77,7 @@
             transform: translateY(-50%);
             width: 50px;
             height: 50px;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.3);
             color: white;
             border: none;
             border-radius: 50%;
@@ -68,27 +87,29 @@
             justify-content: center;
             align-items: center;
             transition: background-color 0.3s;
+            z-index: 10;
         }
         
         .nav-button:hover {
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.6);
         }
         
         .prev {
-            left: 10px;
+            left: 30px;
         }
         
         .next {
-            right: 10px;
+            right: 30px;
         }
         
         .dots-container {
             position: absolute;
-            bottom: 10px;
+            bottom: 8%;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             gap: 10px;
+            z-index: 10;
         }
         
         .dot {
@@ -104,39 +125,41 @@
             background-color: rgba(255, 255, 255, 1);
         }
         
+        .slide::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
         @media (max-width: 768px) {
-            .carousel-container {
-                height: 250px;
-            }
-            
-            .carousel {
-                height: 250px;
+            .slide-content h3 {
+                font-size: 1.2rem;
             }
             
             .slide-content h2 {
-                font-size: 20px;
+                font-size: 2rem;
             }
             
             .slide-content p {
-                font-size: 16px;
+                font-size: 1rem;
             }
         }
         
         @media (max-width: 480px) {
-            .carousel-container {
-                height: 200px;
+            .slide-content {
+                left: 5%;
+                max-width: 90%;
             }
             
-            .carousel {
-                height: 200px;
+            .slide-content h3 {
+                font-size: 1rem;
             }
             
             .slide-content h2 {
-                font-size: 18px;
-            }
-            
-            .slide-content p {
-                font-size: 14px;
+                font-size: 1.5rem;
             }
             
             .nav-button {
@@ -146,34 +169,41 @@
             }
         }
     </style>
+</head>
+<body>
+    <?php include "inc/navbar.php" ?>
 
     <div class="carousel-container">
         <div class="carousel">
             <div class="slide" style="background-image: url('assets/Brabus 911.jpg')">
                 <div class="slide-content">
-                    <h2>Porsche GT 911</h2>
-                    <p>Discover your dream</p>
+                    <h3>Porsche GT 911</h3>
+                    <h2>Discover your dream</h2>
+                    <p>Experience unparalleled performance and iconic design</p>
                 </div>
             </div>
             
-            <div class="slide" style="background-image: url('https://via.placeholder.com/1024x300/1c7d54/ffffff?text=Jaguar+C+X75')">
+            <div class="slide" style="background-image: url('assets/the-jaguar-c-x75-is-finally-a-fully-finished-vx-1440x900.jpg')">
                 <div class="slide-content">
-                    <h2>Jaguar C X75</h2>
-                    <p>The jaguar is shinin'</p>
+                    <h3>Jaguar C X75</h3>
+                    <h2>The jaguar is shinin'</h2>
+                    <p>Elegance meets raw power in this exclusive masterpiece</p>
                 </div>
             </div>
             
-            <div class="slide" style="background-image: url('https://via.placeholder.com/1024x300/222222/ffffff?text=AMG+GT+63+PRO')">
+            <div class="slide" style="background-image: url('assets/AMG GT 63 Pro.jpeg')">
                 <div class="slide-content">
-                    <h2>AMG GT 63 PRO</h2>
-                    <p>Power, Precision, Luxury, Speed.</p>
+                    <h3>AMG GT 63 PRO</h3>
+                    <h2>Power, Precision, Luxury, Speed.</h2>
+                    <p>Dominate the road with German engineering excellence</p>
                 </div>
             </div>
             
-            <div class="slide" style="background-image: url('https://via.placeholder.com/1024x300/eeeeee/333333?text=Ferrari+458+Italia')">
+            <div class="slide" style="background-image: url('assets/White Ferrari.jpg')">
                 <div class="slide-content">
-                    <h2>Ferrari 458 Italia</h2>
-                    <p>White horse is reignin the Kingdom</p>
+                    <h3>Ferrari 458 Italia</h3>
+                    <h2>White horse is reignin the Kingdom</h2>
+                    <p>Italian craftsmanship that defines automotive perfection</p>
                 </div>
             </div>
         </div>
@@ -199,6 +229,7 @@
             
             let currentIndex = 0;
             const totalSlides = slides.length;
+            let autoplayInterval;
             
             function updateCarousel() {
                 carousel.style.transform = `translateX(-${currentIndex * 25}%)`;
@@ -208,28 +239,45 @@
                 });
             }
             
+            function startAutoplay() {
+                stopAutoplay(); 
+                autoplayInterval = setInterval(function() {
+                    currentIndex = (currentIndex + 1) % totalSlides;
+                    updateCarousel();
+                }, 5000);
+            }
+            
+            function stopAutoplay() {
+                if (autoplayInterval) {
+                    clearInterval(autoplayInterval);
+                }
+            }
+            
             nextButton.addEventListener('click', function() {
                 currentIndex = (currentIndex + 1) % totalSlides;
                 updateCarousel();
+                startAutoplay(); 
             });
             
             prevButton.addEventListener('click', function() {
                 currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
                 updateCarousel();
+                startAutoplay(); 
             });
             
             dots.forEach((dot, index) => {
                 dot.addEventListener('click', function() {
                     currentIndex = index;
                     updateCarousel();
+                    startAutoplay(); 
                 });
             });
             
-            setInterval(function() {
-                currentIndex = (currentIndex + 1) % totalSlides;
-                updateCarousel();
-            }, 5000);
+            carousel.addEventListener('mouseenter', stopAutoplay);
+            carousel.addEventListener('mouseleave', startAutoplay);
             
+
+            startAutoplay();
             updateCarousel();
         });
     </script>
