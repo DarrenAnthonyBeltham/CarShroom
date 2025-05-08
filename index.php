@@ -15,6 +15,10 @@
             font-family: Arial, sans-serif;
             overflow-x: hidden;
         }
+
+        a {
+            text-decoration: none;
+        }
         
         .carousel-container {
             position: relative;
@@ -153,6 +157,8 @@
             display: flex;
             padding: 0 10%;
             align-items: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
         }
         
         .news-content {
@@ -541,5 +547,321 @@
             }
         });
     </script>
+
+<div class="gallery-container">
+        <div class="car-card" data-category="SUV">
+            <img src="1-Mercedes-G-Class-review.jpg" alt="SUV" class="car-image">
+            <div class="car-info">
+                <div class="car-category">SUV</div>
+                <div class="car-name">Mercedes-AMG G 63</div>
+                <div class="explore-btn">
+                    <a href="#">Explore<span class="explore-icon"></span></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="car-card" data-category="Hypercars">
+            <img src="Venom F5.jpg" alt="Hypercar" class="car-image">
+            <div class="car-info">
+                <div class="car-category">Hypercars</div>
+                <div class="car-name">Venom F5</div>
+                <div class="explore-btn">
+                    <a href="#">Explore<span class="explore-icon"></span></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="car-card" data-category="Supercars">
+            <img src="Chevrolet Corvette.jpg" alt="Supercar" class="car-image">
+            <div class="car-info">
+                <div class="car-category">Supercars</div>
+                <div class="car-name">Chevrolet Corvette</div>
+                <div class="explore-btn">
+                    <a href="#">Explore<span class="explore-icon"></span></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="car-card" data-category="Musclecars">
+            <img src="Dodge-Challenger-Srt.jpg" alt="Musclecar" class="car-image">
+            <div class="car-info">
+                <div class="car-category">Musclecars</div>
+                <div class="car-name">Dodge Charger SRT Hellcat</div>
+                <div class="explore-btn">
+                    <a href="#">Explore<span class="explore-icon"></span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .gallery-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 15px;
+        }
+
+        .car-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            height: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .car-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            background-color: #f0f0f0;
+        }
+
+        .car-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .car-category {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .car-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .explore-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .explore-btn:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .explore-btn a {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+        }
+
+        .explore-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 5px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            position: relative;
+        }
+
+        .explore-icon:after {
+            content: "→";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #333;
+            font-size: 12px;
+        }
+    </style>
+
+    <script>
+        const carData = {
+            'SUV': [
+                { name: 'Mercedes-AMG G 63', image: 'assets/1-Mercedes-G-Class-review.jpg' },
+                { name: 'Range Rover Sport', image: 'assets/RangeRoverSport.webp' },
+                { name: 'Lamborghini Urus', image: 'assets/Urus blue.jpg' }
+            ],
+            'Hypercars': [
+                { name: 'Venom F5', image: 'assets/Venom f5.jpg' },
+                { name: 'Bugatti Chiron', image: 'assets/buggatichiron.jpg' },
+                { name: 'La Ferrari', image: 'assets/laferrari.jpg' }
+            ],
+            'Supercars': [
+                { name: 'Chevrolet Corvette', image: 'assets/Chevrolet Corvette.jpg' },
+                { name: 'Ferrari 488', image: 'assets/ferrari488.jpg' },
+                { name: 'Lamborghini Huracán', image: 'assets/huracan.jpg' }
+            ],
+            'Musclecars': [
+                { name: 'Dodge Charger SRT Hellcat', image: 'assets/Dodge-Challenger-Srt.jpg' },
+                { name: 'Ford Mustang Shelby GT500', image: 'assets/ford mustang shelby gt500.jpg' },
+                { name: 'Chevrolet Camaro ZR1', image: 'assets/Chevrolet Camaro ZR1.jpg' }
+            ]
+        };
+
+        function preloadImages() {
+            Object.values(carData).forEach(category => {
+                category.forEach(car => {
+                    const img = new Image();
+                    img.src = car.image;
+                });
+            });
+        }
+
+        function startCarRotation() {
+            const carCards = document.querySelectorAll('.car-card');
+            
+            carCards.forEach(card => {
+                const category = card.getAttribute('data-category');
+                const nameElement = card.querySelector('.car-name');
+                const imageElement = card.querySelector('.car-image');
+                let currentIndex = 0;
+                const categoryData = carData[category];
+                
+                setInterval(() => {
+                    currentIndex = (currentIndex + 1) % categoryData.length;
+                    
+                    nameElement.style.opacity = '0';
+                    imageElement.style.transform = 'scale(1.1)';
+                    
+                    setTimeout(() => {
+                        nameElement.textContent = categoryData[currentIndex].name;
+                        imageElement.src = categoryData[currentIndex].image;
+                        
+                        imageElement.onload = function() {
+                            nameElement.style.opacity = '1';
+                            imageElement.style.transform = 'scale(1)';
+                        };
+                        
+                        setTimeout(() => {
+                            nameElement.style.opacity = '1';
+                            imageElement.style.transform = 'scale(1)';
+                        }, 1000);
+                    }, 500);
+                    
+                }, 4000);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.car-image');
+            
+            images.forEach(img => {
+                const card = img.closest('.car-card');
+                card.classList.remove('loading');
+                
+                img.onerror = function() {
+                    this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiM5OTkiPkltYWdlIEVycm9yPC90ZXh0Pjwvc3ZnPg==';
+                };
+                
+                const category = card.getAttribute('data-category');
+                const carName = card.querySelector('.car-name').textContent;
+                const carDataCategory = carData[category];
+                
+                if (carDataCategory) {
+                    const carItem = carDataCategory.find(car => car.name === carName);
+                    if (carItem) {
+                        img.src = carItem.image;
+                    }
+                }
+            });
+            
+            preloadImages();
+            setTimeout(startCarRotation, 1000);
+        });
+    </script>
+
+    <div class="newsletter">
+        <h1>Newsletter</h1>
+        <p>Stay up to date with the latest news from CarShroom.</p>
+        <button>
+            <a href="#" style="color: #fff">Subscribe</a>
+        </button>
+    </div>
+
+    <style>
+        .newsletter {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 25px;
+            width: 100%;
+            padding: 50px 30px;
+            background: linear-gradient(135deg, #4A4A4A 0%, #383838 100%);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            font-family: 'Space Mono', monospace;
+            margin-top: 70px;
+        }
+
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .newsletter h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+            animation: fadeInSlideUp 0.6s ease-out 0.2s;
+        }
+
+        .newsletter p {
+            font-size: 18px;
+            font-weight: 400;
+            color: #e0e0e0;
+            line-height: 1.7;
+            max-width: 700px;
+            margin-bottom: 15px;
+            animation: fadeInSlideUp 0.6s ease-out 0.4s;
+        }
+
+        .newsletter button {
+            cursor: pointer;
+            background-color: #E74C3C;
+            padding: 18px 40px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+            animation: fadeInSlideUp 0.6s ease-out 0.6s;
+        }
+
+        .newsletter button:hover {
+            background-color: #C0392B;
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(192, 57, 43, 0.4);
+        }
+
+        .newsletter button:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 3px 10px rgba(192, 57, 43, 0.3);
+        }
+    </style>
+
+    <?php include "inc/footer.php" ?>
 </body>
 </html>
