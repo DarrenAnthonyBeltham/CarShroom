@@ -1,5 +1,5 @@
 <body>
-    <?php include "inc/navbar.php" ?>
+    <?php include __DIR__ . '/../inc/navbar.php'; ?>
 
     
 
