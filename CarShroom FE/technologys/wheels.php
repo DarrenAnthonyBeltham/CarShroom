@@ -8,7 +8,7 @@ $wheel_products = [
         'size' => '20 inch | 5x112',
         'finish' => 'Gloss Black',
         'price' => '1,200.00',
-        'image' => 'https://placehold.co/600x600/1a1a1a/ffffff?text=Forged+F-01',
+        'image' => './assets/wheels/forgedmonoblockf01.jpeg',
         'description' => 'Ultra-lightweight forged monoblock construction for maximum performance and aggressive styling. Perfect for sports and luxury vehicles seeking an edge.'
     ],
     [
@@ -18,7 +18,7 @@ $wheel_products = [
         'size' => '19 inch | 5x120',
         'finish' => 'Silver Machined Face',
         'price' => '950.00',
-        'image' => 'https://placehold.co/600x600/cccccc/333333?text=Classic+Mesh',
+        'image' => './assets/wheels/ClassicMeshC05.webp',
         'description' => 'Timeless mesh design with a modern twist. Durable construction with a polished finish, offering a sophisticated look for classic and contemporary cars.'
     ],
     [
@@ -28,7 +28,7 @@ $wheel_products = [
         'size' => '18 inch | 6x139.7',
         'finish' => 'Matte Bronze',
         'price' => '880.00',
-        'image' => 'https://placehold.co/600x600/785549/ffffff?text=Off-Road+X-10',
+        'image' => './assets/wheels/Off-Road Dominator X-10.jpg',
         'description' => 'Built for the toughest terrains. Reinforced alloy with a rugged matte bronze finish, providing exceptional durability and a commanding presence for trucks and SUVs.'
     ],
     [
@@ -38,7 +38,7 @@ $wheel_products = [
         'size' => '21 inch | 5x114.3',
         'finish' => 'Carbon Fiber & Polished Alloy',
         'price' => '2,500.00',
-        'image' => 'https://placehold.co/600x600/4a4a4a/eeeeee?text=Aero+Disc',
+        'image' => './assets/wheels/AeroDiscTurboFan.jpg',
         'description' => 'Aerodynamically optimized TurboFan design for reduced drag and enhanced brake cooling. Features a unique carbon fiber overlay for a futuristic appeal.'
     ],
 ];
@@ -123,10 +123,10 @@ $wheel_products = [
 
         .wheel-product-card img {
             width: 100%;
-            height: 280px; 
-            object-fit: cover;
+            height: 100%; 
+            object-fit: cover; 
+            object-position: center;
             display: block;
-            border-bottom: 1px solid #eee;
         }
         
         .wheel-product-info {
@@ -249,7 +249,7 @@ $wheel_products = [
                                 <?php echo htmlspecialchars($wheel['description']); ?>
                             </p>
                             <div class="wheel-product-price">$<?php echo htmlspecialchars($wheel['price']); ?></div>
-                            <button type="button" class="add-to-cart-button" onclick="alert('<?php echo htmlspecialchars(addslashes($wheel['name'])); ?> added to cart! (Demo)')">Add to Cart</button>
+                            <button type="button" class="add-to-cart-button" onclick="alert('<?php echo htmlspecialchars(addslashes($wheel['name'])); ?> added to cart!')">Add to Cart</button>
                         </div>
                     </div>
                 <?php endforeach; ?>
