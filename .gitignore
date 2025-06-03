@@ -1,0 +1,23 @@
+# PHP / Composer
+/CarShroom FE/vendor/
+/CarShroom FE/composer.lock
+*.log
+
+# Go
+# If you build your Go executable inside CarShroom BE, add its name:
+# /CarShroom BE/your_executable_name
+# /CarShroom BE/your_executable_name.exe
+# Or more generally for any executables in the BE folder:
+/CarShroom BE/*.exe 
+/CarShroom BE/*.out
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE specific
+.vscode/
+.idea/
+
+# Node modules (if your FE uses npm)
+/CarShroom FE/node_modules/
