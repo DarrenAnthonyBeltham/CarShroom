@@ -1,48 +1,3 @@
-<?php
-// Sample data for brake systems - replace with your actual data source
-$brake_products = [
-    [
-        'id' => 1,
-        'name' => 'Carbon Ceramic Pro-Series',
-        'brand' => 'Apex Braking',
-        'type' => 'Full Kit (Front & Rear)',
-        'features' => 'Carbon ceramic rotors, 8-piston calipers, high-temp pads',
-        'price' => '8,500.00',
-        'image' => './assets/brake/Carbon Ceramic Pro Series.jpg', 
-        'description' => 'Ultimate stopping power for track and high-performance street use. Exceptional fade resistance and reduced unsprung weight.'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Street Sport Big Brake Kit',
-        'brand' => 'Performance Stop',
-        'type' => 'Front Axle Kit',
-        'features' => 'Drilled & slotted rotors, 6-piston calipers, sport pads',
-        'price' => '2,800.00',
-        'image' => './assets/brake/Street Sport Big Brake kit.jpg', 
-        'description' => 'Significant upgrade over OEM brakes for spirited driving. Improved heat dissipation and consistent pedal feel.'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Endurance Racing Pads',
-        'brand' => 'TrackDay Comp',
-        'type' => 'Brake Pads (Set of 4)',
-        'features' => 'High-friction compound, excellent thermal stability',
-        'price' => '450.00',
-        'image' => './assets/brake/Endurance Racing Pads.jpg', 
-        'description' => 'Designed for demanding race conditions, offering long life and consistent performance lap after lap.'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Braided Steel Brake Lines',
-        'brand' => 'Fluid Dynamics',
-        'type' => 'Full Set (4 lines)',
-        'features' => 'Stainless steel braiding, PTFE inner core, improved pedal response',
-        'price' => '220.00',
-        'image' => './assets/brake/Braided Steel Brake Lines.jpg', 
-        'description' => 'Reduces line expansion for a firmer, more responsive brake pedal and enhanced modulation.'
-    ],
-];
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,19 +115,19 @@ $brake_products = [
             font-weight: 500;
             text-transform: uppercase;
         }
-         .brake-product-info .type {
+         .brake-product-info .type { 
             font-size: 0.9em;
             color: #555;
             margin-bottom: 10px;
             font-style: italic;
         }
-        .brake-product-info .details {
+        .brake-product-info .details { 
             font-size: 0.9em;
             color: #555;
             margin-bottom: 15px;
             flex-grow: 1; 
         }
-         .brake-product-info .details strong {
+         .brake-product-info .details strong { 
             color: #333;
          }
 
@@ -187,7 +142,7 @@ $brake_products = [
         .add-to-cart-button {
             display: block;
             width: 100%;
-            background-color: #a52a2a;
+            background-color: #a52a2a; 
             color: #ffffff;
             padding: 12px 20px;
             text-align: center;
@@ -202,6 +157,16 @@ $brake_products = [
         }
         .add-to-cart-button:hover {
             background-color: #8b0000; 
+        }
+
+        #productLoadingMessage, #productErrorMessage {
+            text-align: center;
+            font-size: 1.1em;
+            padding: 20px;
+            color: #555;
+        }
+        #productErrorMessage {
+            color: red;
         }
         
         @media (max-width: 768px) { 
@@ -252,25 +217,9 @@ $brake_products = [
             <div class="brakes-main-title-container">
                 <h1 class="brakes-main-title">Brake Performance Systems</h1>
             </div>
-            <div class="brake-products-grid">
-                <?php foreach ($brake_products as $brake): ?>
-                    <div class="brake-product-card">
-                        <div class="image-container">
-                            <img src="<?php echo htmlspecialchars($brake['image']); ?>" alt="<?php echo htmlspecialchars($brake['name']); ?>" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Not+Available';">
-                        </div>
-                        <div class="brake-product-info">
-                            <span class="brand"><?php echo htmlspecialchars($brake['brand']); ?></span>
-                            <h3><?php echo htmlspecialchars($brake['name']); ?></h3>
-                            <p class="type"><?php echo htmlspecialchars($brake['type']); ?></p>
-                            <p class="details">
-                                <strong>Features:</strong> <?php echo htmlspecialchars($brake['features']); ?><br>
-                                <?php echo htmlspecialchars($brake['description']); ?>
-                            </p>
-                            <div class="brake-product-price">$<?php echo htmlspecialchars($brake['price']); ?></div>
-                            <button type="button" class="add-to-cart-button" onclick="alert('<?php echo htmlspecialchars(addslashes($brake['name'])); ?> added to cart! (Demo)')">Add to Cart</button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+            <div id="productLoadingMessage">Loading brake systems...</div>
+            <div id="productErrorMessage" style="display:none;"></div>
+            <div class="brake-products-grid" id="brakeProductsGrid">
             </div>
         </section>
     </main>
@@ -286,5 +235,110 @@ $brake_products = [
             include "../inc/footer.php";
         }
     ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsGrid = document.getElementById('brakeProductsGrid');
+            const loadingMessageEl = document.getElementById('productLoadingMessage');
+            const errorMessageEl = document.getElementById('productErrorMessage');
+            const USER_ID = "user123"; 
+
+            async function fetchProducts() {
+                loadingMessageEl.style.display = 'block';
+                errorMessageEl.style.display = 'none';
+                productsGrid.innerHTML = ''; 
+
+                try {
+                    const response = await fetch(`http://localhost:8080/products?category=brakes`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const products = await response.json();
+                    renderProducts(products);
+                } catch (error) {
+                    console.error("Error fetching brake products:", error);
+                    errorMessageEl.textContent = 'Error loading brake systems. Please try again later.';
+                    errorMessageEl.style.display = 'block';
+                } finally {
+                    loadingMessageEl.style.display = 'none';
+                }
+            }
+
+            function renderProducts(products) {
+                if (!products || products.length === 0) {
+                    productsGrid.innerHTML = '<p>No brake systems found in this category.</p>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('brake-product-card');
+
+                    let imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
+                    if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('../')) {
+                         imagePath = `../${imagePath}`; 
+                    }
+
+
+                    productCard.innerHTML = `
+                        <div class="image-container">
+                            <img src="${htmlspecialchars(imagePath)}" alt="${htmlspecialchars(product.name)}" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Error';">
+                        </div>
+                        <div class="brake-product-info">
+                            <span class="brand">${htmlspecialchars(product.brand || 'N/A')}</span>
+                            <h3>${htmlspecialchars(product.name)}</h3>
+                            <p class="type">Type: ${htmlspecialchars(product.type || 'N/A')}</p> 
+                            <p class="details">
+                                <strong>Features:</strong> ${htmlspecialchars(product.features || 'N/A')}<br>
+                                ${htmlspecialchars(product.description || 'No description available.')}
+                            </p>
+                            <div class="brake-product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <button type="button" class="add-to-cart-button" data-product-id="${product.id}" data-product-name="${htmlspecialchars(product.name)}">Add to Cart</button>
+                        </div>
+                    `;
+                    productsGrid.appendChild(productCard);
+                });
+
+                document.querySelectorAll('.add-to-cart-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.dataset.productId;
+                        const productName = this.dataset.productName;
+                        addToCart(productId, productName, 1); 
+                    });
+                });
+            }
+
+            async function addToCart(productId, productName, quantity) {
+                const payload = {
+                    user_id: USER_ID,
+                    product_id: productId,
+                    quantity: quantity
+                };
+                try {
+                    const response = await fetch('http://localhost:8080/cart/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', },
+                        body: JSON.stringify(payload),
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(`"${htmlspecialchars(productName)}" added to cart successfully!`);
+                    } else {
+                        alert(`Error adding to cart: ${result.message || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    alert('Failed to add item to cart. Please check the connection or try again later.');
+                }
+            }
+            
+            function htmlspecialchars(str) {
+                if (typeof str !== 'string') return '';
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+
+            fetchProducts();
+        });
+    </script>
 </body>
 </html>

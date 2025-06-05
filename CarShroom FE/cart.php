@@ -57,7 +57,7 @@
 
         .cart-layout {
             display: grid;
-            grid-template-columns: 2fr 1fr; /* Items on left, summary on right */
+            grid-template-columns: 2fr 1fr; 
             gap: 40px;
         }
 
@@ -70,7 +70,7 @@
 
         .cart-item {
             display: grid;
-            grid-template-columns: 100px 1fr auto auto; /* Image, Info, Quantity, Price/Remove */
+            grid-template-columns: 100px 1fr auto auto; 
             gap: 20px;
             align-items: center;
             padding-bottom: 20px;
@@ -89,6 +89,7 @@
             max-height: 80px;
             object-fit: contain;
             border-radius: 4px;
+            background-color: #f8f8f8; /* Light background for image area */
         }
 
         .cart-item-info h3 {
@@ -111,14 +112,14 @@
             font-size: 0.9em;
             margin-right: 10px;
         }
-        /* Hide number input arrows */
+        
         .cart-item-quantity input[type=number]::-webkit-inner-spin-button, 
         .cart-item-quantity input[type=number]::-webkit-outer-spin-button { 
           -webkit-appearance: none; 
           margin: 0; 
         }
         .cart-item-quantity input[type=number] {
-          -moz-appearance: textfield; /* Firefox */
+          -moz-appearance: textfield; 
         }
 
 
@@ -149,7 +150,7 @@
             padding: 25px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-            height: fit-content; /* So it doesn't stretch full height */
+            height: fit-content; 
         }
         .cart-summary h2 {
             font-family: 'Space Mono', monospace;
@@ -212,18 +213,31 @@
             font-size: 1.2em;
             color: #777;
         }
+        .empty-cart-message a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .empty-cart-message a:hover {
+            text-decoration: underline;
+        }
 
-        #loadingMessage {
+        #loadingMessage, #cartActionStatus {
             text-align: center;
             font-size: 1.1em;
             padding: 20px;
             color: #555;
         }
+        #cartActionStatus.success {
+            color: green;
+        }
+        #cartActionStatus.error {
+            color: red;
+        }
 
 
         @media (max-width: 992px) {
             .cart-layout {
-                grid-template-columns: 1fr; /* Stack on smaller screens */
+                grid-template-columns: 1fr; 
             }
              .cart-summary {
                 margin-top: 30px;
@@ -234,7 +248,7 @@
                 font-size: 2em;
             }
             .cart-item {
-                grid-template-columns: 80px 1fr; /* Image and combined info/actions */
+                grid-template-columns: 80px 1fr; 
                 grid-template-areas: 
                     "img info"
                     "img qty"
@@ -268,10 +282,11 @@
             </div>
 
             <div id="loadingMessage">Loading cart...</div>
+            <div id="cartActionStatus" style="display:none;"></div>
             
             <div class="cart-layout" style="display: none;"> 
                 <div class="cart-items-list" id="cartItemsContainer">
-                    </div>
+                </div>
 
                 <div class="cart-summary">
                     <h2>Order Summary</h2>
@@ -319,18 +334,29 @@
             const cartLayoutEl = document.querySelector('.cart-layout');
             const loadingMessageEl = document.getElementById('loadingMessage');
             const emptyCartMessageContainerEl = document.getElementById('emptyCartMessageContainer');
+            const cartActionStatusEl = document.getElementById('cartActionStatus');
             
-            // IMPORTANT: Replace with actual user ID from session or auth
             const USER_ID = "user123"; 
+            const GO_BACKEND_URL = 'http://localhost:8080'; 
+
+            function displayActionStatus(message, isError = false) {
+                cartActionStatusEl.textContent = message;
+                cartActionStatusEl.className = isError ? 'error' : 'success';
+                cartActionStatusEl.style.display = 'block';
+                setTimeout(() => {
+                    cartActionStatusEl.style.display = 'none';
+                }, 3000); 
+            }
 
             async function fetchCartData() {
                 loadingMessageEl.style.display = 'block';
                 cartLayoutEl.style.display = 'none';
                 emptyCartMessageContainerEl.style.display = 'none';
+                cartActionStatusEl.style.display = 'none';
+
 
                 try {
-                    // Adjust the URL to your Go backend's address if it's different
-                    const response = await fetch(`http://localhost:8080/cart/view?user_id=${USER_ID}`);
+                    const response = await fetch(`${GO_BACKEND_URL}/cart/view?user_id=${USER_ID}`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -340,28 +366,31 @@
                     console.error("Error fetching cart data:", error);
                     cartItemsContainer.innerHTML = '<p style="color:red;">Error loading cart. Please try again later.</p>';
                     loadingMessageEl.style.display = 'none';
-                    cartLayoutEl.style.display = 'block'; // Show layout even if empty to see error
+                    cartLayoutEl.style.display = 'grid'; 
                 }
             }
 
             function renderCart(items) {
-                cartItemsContainer.innerHTML = ''; // Clear previous items
+                cartItemsContainer.innerHTML = ''; 
                 let subtotal = 0;
 
                 if (!items || items.length === 0) {
                     emptyCartMessageContainerEl.style.display = 'block';
                     cartLayoutEl.style.display = 'none';
                     loadingMessageEl.style.display = 'none';
-                    updateCartSummary(0); // Update summary to show $0
+                    updateCartSummary(0); 
                     return;
                 }
                 
                 emptyCartMessageContainerEl.style.display = 'none';
-                cartLayoutEl.style.display = 'grid'; // Show cart layout
+                cartLayoutEl.style.display = 'grid'; 
                 loadingMessageEl.style.display = 'none';
 
-
                 items.forEach(item => {
+                    if (!item.product) {
+                        console.warn("Skipping cart item with missing product data:", item);
+                        return; 
+                    }
                     const itemElement = document.createElement('div');
                     itemElement.classList.add('cart-item');
                     
@@ -369,67 +398,113 @@
                     const lineTotal = productPrice * item.quantity;
                     subtotal += lineTotal;
 
+                    let imagePath = item.product.image_url || 'https://placehold.co/100x80/cccccc/333333?text=No+Image';
+                    if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('../assets/')) {
+                    }
+
                     itemElement.innerHTML = `
                         <div class="cart-item-image">
-                            <img src="${item.product.image_url || 'https://placehold.co/100x80/cccccc/333333?text=No+Image'}" alt="${htmlspecialchars(item.product.name)}">
+                            <img src="${htmlspecialchars(imagePath)}" alt="${htmlspecialchars(item.product.name || 'Product Image')}">
                         </div>
                         <div class="cart-item-info">
-                            <h3>${htmlspecialchars(item.product.name)}</h3>
-                            <p class="item-meta">ID: ${htmlspecialchars(item.product.id)}</p>
+                            <h3>${htmlspecialchars(item.product.name || 'Unknown Product')}</h3>
+                            <p class="item-meta">ID: ${htmlspecialchars(item.product.id || 'N/A')}</p>
                         </div>
                         <div class="cart-item-quantity">
-                            <input type="number" value="${item.quantity}" min="1" data-product-id="${item.product.id}" onchange="updateQuantity('${item.product.id}', this.value)">
+                            <input type="number" value="${item.quantity}" min="1" data-product-id="${item.product.id}" class="item-quantity-input">
                         </div>
                         <div class="cart-item-actions">
                             <span class="item-price">$${lineTotal.toFixed(2)}</span>
-                            <button class="remove-item-btn" onclick="removeItem('${item.product.id}')">Remove</button>
+                            <button class="remove-item-btn" data-product-id="${item.product.id}">Remove</button>
                         </div>
                     `;
                     cartItemsContainer.appendChild(itemElement);
                 });
                 updateCartSummary(subtotal);
+                attachCartItemEventListeners();
             }
+            
+            function attachCartItemEventListeners() {
+                document.querySelectorAll('.item-quantity-input').forEach(input => {
+                    input.addEventListener('change', function() {
+                        const productId = this.dataset.productId;
+                        const quantity = parseInt(this.value, 10);
+                        if (quantity >= 0) { 
+                            updateCartItemQuantity(productId, quantity);
+                        } else {
+                            this.value = 1; 
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.remove-item-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.dataset.productId;
+                        removeCartItem(productId);
+                    });
+                });
+            }
+
+
+            async function updateCartItemQuantity(productId, quantity) {
+                const payload = {
+                    user_id: USER_ID,
+                    product_id: productId,
+                    quantity: quantity
+                };
+                try {
+                    const response = await fetch(`${GO_BACKEND_URL}/cart/item/update`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        displayActionStatus(result.message || 'Cart updated successfully!');
+                        fetchCartData(); 
+                    } else {
+                        displayActionStatus(result.message || 'Error updating cart.', true);
+                    }
+                } catch (error) {
+                    console.error('Error updating cart item:', error);
+                    displayActionStatus('Failed to update cart item. Please check connection.', true);
+                }
+            }
+
+            async function removeCartItem(productId) {
+                const payload = {
+                    user_id: USER_ID,
+                    product_id: productId
+                };
+                try {
+                    const response = await fetch(`${GO_BACKEND_URL}/cart/item/remove`, {
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        displayActionStatus(result.message || 'Item removed successfully!');
+                        fetchCartData(); 
+                    } else {
+                        displayActionStatus(result.message || 'Error removing item.', true);
+                    }
+                } catch (error) {
+                    console.error('Error removing cart item:', error);
+                    displayActionStatus('Failed to remove item. Please check connection.', true);
+                }
+            }
+
 
             function updateCartSummary(subtotal) {
                 cartSubtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-                // For simplicity, total is same as subtotal. Add shipping/taxes logic later.
                 cartTotalEl.textContent = `$${subtotal.toFixed(2)}`;
             }
-
-            // Dummy functions for actions - these would need backend integration
-            window.updateQuantity = function(productId, quantity) {
-                alert(`Quantity update for product ID ${productId} to ${quantity} needs backend integration.`);
-                // To make it interactive for demo, you could refetch or recalculate locally
-                // For now, let's just log and perhaps refetch to show it's not persistent without backend
-                console.log(`Updating product ${productId} to quantity ${quantity}`);
-                // Potentially re-fetch cart to show "current" state from backend, 
-                // or just update UI locally if you want a purely front-end demo of this part.
-                // fetchCartData(); // This would revert if not saved on backend
-            }
-
-            window.removeItem = function(productId) {
-                alert(`Remove item for product ID ${productId} needs backend integration.`);
-                // Similar to update, this needs a backend call.
-                console.log(`Removing product ${productId}`);
-                // fetchCartData(); // Re-fetch to show it's not persistent without backend
-            }
             
-            // Utility to prevent XSS, similar to PHP's htmlspecialchars
             function htmlspecialchars(str) {
                 if (typeof str !== 'string') return '';
-                return str.replace(/[&<>"']/g, function (match) {
-                    const SCRIPT_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
-                    while (SCRIPT_REGEX.test(match)) {
-                        match = match.replace(SCRIPT_REGEX, "");
-                    }
-                    return {
-                        '&': '&amp;',
-                        '<': '&lt;',
-                        '>': '&gt;',
-                        '"': '&quot;',
-                        "'": '&#39;'
-                    }[match];
-                });
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return str.replace(/[&<>"']/g, function(m) { return map[m]; });
             }
 
             fetchCartData();

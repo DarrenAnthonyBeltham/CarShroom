@@ -6,25 +6,31 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os" 
+	"os"
 	"strconv"
 	"sync"
-	"time" 
+	"time"
 
-	_ "github.com/go-sql-driver/mysql" 
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
 
 type Product struct {
-	ID          string       `json:"id"`       
-	Name        string       `json:"name"`  
-	Price       float64      `json:"price"`        
-	ImageURL    string       `json:"image_url"`    
-	Description string       `json:"description"`  
-	Stock       int          `json:"stock"`        
-	CreatedAt   sql.NullTime `json:"created_at"`   
-	UpdatedAt   sql.NullTime `json:"updated_at"`   
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	Price        float64      `json:"price"`
+	ImageURL     string       `json:"image_url,omitempty"`
+	Description  string       `json:"description,omitempty"`
+	Stock        int          `json:"stock"`
+	UpdatedAt    sql.NullTime `json:"-"`
+	UpdatedAtStr string       `json:"updated_at,omitempty"`
+	Brand        string       `json:"brand,omitempty"`
+	Size         string       `json:"size,omitempty"`
+	Finish       string       `json:"finish,omitempty"`
+	Material     string       `json:"material,omitempty"`
+	Features     string       `json:"features,omitempty"`
+	Type         string       `json:"type,omitempty"`
 }
 
 type CartItem struct {
@@ -33,14 +39,19 @@ type CartItem struct {
 }
 
 var (
-	carts = make(map[string]map[string]CartItem)
+	carts = make(map[string]map[string]CartItem) 
 	mu    sync.Mutex
 )
 
-type AddToCartRequest struct {
+type AddToCartRequest struct { 
 	UserID    string `json:"user_id"`
 	ProductID string `json:"product_id"`
 	Quantity  int    `json:"quantity"`
+}
+
+type RemoveCartItemRequest struct {
+	UserID    string `json:"user_id"`
+	ProductID string `json:"product_id"`
 }
 
 func initDB() {
@@ -51,13 +62,13 @@ func initDB() {
 	dbName := os.Getenv("DB_NAME")
 
 	if dbHost == "" {
-		dbHost = "127.0.0.1" 
+		dbHost = "127.0.0.1"
 	}
 	if dbPort == "" {
 		dbPort = "3306"
 	}
 	if dbUser == "" {
-		dbUser = "root" 
+		dbUser = "root"
 	}
 	if dbPassword == "" {
 		log.Println("Warning: DB_PASSWORD environment variable not set.")
@@ -78,7 +89,6 @@ func initDB() {
 			time.Sleep(5 * time.Second)
 			continue
 		}
-
 		err = db.Ping()
 		if err != nil {
 			log.Printf("Failed to ping database (attempt %d/%d): %v", i+1, maxRetries, err)
@@ -88,13 +98,10 @@ func initDB() {
 		}
 		break
 	}
-
 	if err != nil {
 		log.Fatalf("Could not connect to the database after %d attempts: %v", maxRetries, err)
 	}
-
 	log.Println("Successfully connected to the MySQL database!")
-
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
 	db.SetConnMaxLifetime(5 * time.Minute)
@@ -102,13 +109,18 @@ func initDB() {
 
 func getProductFromDB(productID string) (Product, error) {
 	var p Product
-	var imageURL sql.NullString    
-	var description sql.NullString 
+	var imageURL, description, brand, productType, features, category sql.NullString
 
-	query := `SELECT product_id, product_name, price, stock_quantity, image_url, description, created_at, updated_at
+	query := `SELECT product_id, product_name, price, stock_quantity, 
+					 COALESCE(image_url, ''), COALESCE(description, ''), updated_at,
+					 COALESCE(brand, ''), COALESCE(product_type, ''), COALESCE(features, ''), COALESCE(category, '') 
 			  FROM products WHERE product_id = ?`
 	row := db.QueryRow(query, productID)
-	err := row.Scan(&p.ID, &p.Name, &p.Price, &p.Stock, &imageURL, &description, &p.CreatedAt, &p.UpdatedAt)
+	err := row.Scan(
+		&p.ID, &p.Name, &p.Price, &p.Stock,
+		&imageURL, &description, &p.UpdatedAt,
+		&brand, &productType, &features, &category,
+	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -117,24 +129,111 @@ func getProductFromDB(productID string) (Product, error) {
 		return Product{}, fmt.Errorf("error scanning product: %w", err)
 	}
 
-	if imageURL.Valid {
-		p.ImageURL = imageURL.String
-	}
-	if description.Valid {
-		p.Description = description.String
+	p.ImageURL = imageURL.String
+	p.Description = description.String
+	p.Brand = brand.String
+	p.Size = productType.String
+	p.Material = productType.String 
+	p.Finish = productType.String 
+	p.Features = features.String
+	p.Type = category.String
+
+	if p.UpdatedAt.Valid {
+		p.UpdatedAtStr = p.UpdatedAt.Time.Format(time.RFC3339)
 	}
 	return p, nil
 }
 
+func listProductsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method != http.MethodGet {
+		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	categoryParam := r.URL.Query().Get("category")
+	var rows *sql.Rows
+	var err error
+
+	query := `SELECT product_id, product_name, price, stock_quantity, 
+					 COALESCE(image_url, ''), COALESCE(description, ''), updated_at,
+					 COALESCE(brand, ''), COALESCE(product_type, ''), COALESCE(features, ''), COALESCE(category, '')
+			  FROM products`
+
+	if categoryParam != "" {
+		query += " WHERE category = ?"
+		rows, err = db.Query(query, categoryParam)
+	} else {
+		rows, err = db.Query(query)
+	}
+
+	if err != nil {
+		log.Printf("Error querying products: %v", err)
+		http.Error(w, "Failed to retrieve products", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	products := []Product{}
+	for rows.Next() {
+		var p Product
+		var imageURL, description, brand, productType, features, actualCategory sql.NullString
+
+		err := rows.Scan(
+			&p.ID, &p.Name, &p.Price, &p.Stock,
+			&imageURL, &description, &p.UpdatedAt,
+			&brand, &productType, &features, &actualCategory,
+		)
+		if err != nil {
+			log.Printf("Error scanning product row: %v", err)
+			continue
+		}
+		p.ImageURL = imageURL.String
+		p.Description = description.String
+		p.Brand = brand.String
+		p.Size = productType.String   
+		p.Material = productType.String 
+		p.Finish = productType.String 
+		p.Features = features.String
+		p.Type = actualCategory.String 
+
+		if p.UpdatedAt.Valid {
+			p.UpdatedAtStr = p.UpdatedAt.Time.Format(time.RFC3339)
+		}
+		products = append(products, p)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Printf("Error after iterating product rows: %v", err)
+		http.Error(w, "Error processing products", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(products); err != nil {
+		log.Printf("Error encoding products to JSON: %v", err)
+	}
+}
+
+func setCORSHeaders(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+}
+
 func addToCartHandler(w http.ResponseWriter, r *http.Request) {
+	setCORSHeaders(w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	if r.Method != http.MethodPost {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	var req AddToCartRequest
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&req); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -146,7 +245,6 @@ func addToCartHandler(w http.ResponseWriter, r *http.Request) {
 
 	product, err := getProductFromDB(req.ProductID)
 	if err != nil {
-		log.Printf("Error fetching product %s from DB: %v", req.ProductID, err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
@@ -170,22 +268,134 @@ func addToCartHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		item.Quantity += req.Quantity
 		carts[req.UserID][req.ProductID] = item
-		log.Printf("Updated quantity for product %s for user %s. New quantity: %d\n", req.ProductID, req.UserID, item.Quantity)
+		log.Printf("Updated quantity (added) for product %s for user %s. New quantity: %d\n", req.ProductID, req.UserID, item.Quantity)
 	} else {
-		carts[req.UserID][req.ProductID] = CartItem{
-			Product:  product,
-			Quantity: req.Quantity,
-		}
+		carts[req.UserID][req.ProductID] = CartItem{Product: product, Quantity: req.Quantity}
 		log.Printf("Added product %s (qty: %d) to cart for user %s\n", req.ProductID, req.Quantity, req.UserID)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Item added to cart successfully"})
-	log.Printf("Current cart for user %s: %+v\n", req.UserID, carts[req.UserID])
+	json.NewEncoder(w).Encode(map[string]string{"message": "Item added/updated in cart successfully"})
 }
 
+func updateCartItemHandler(w http.ResponseWriter, r *http.Request) {
+	setCORSHeaders(w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	if r.Method != http.MethodPost {
+		http.Error(w, "Only POST method is allowed for updating cart item", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req AddToCartRequest 
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if req.UserID == "" || req.ProductID == "" {
+		http.Error(w, "Missing required fields (user_id, product_id)", http.StatusBadRequest)
+		return
+	}
+	if req.Quantity < 0 { 
+		http.Error(w, "Quantity cannot be negative", http.StatusBadRequest)
+		return
+	}
+	
+	mu.Lock()
+	defer mu.Unlock()
+
+	userCart, userExists := carts[req.UserID]
+	if !userExists {
+		http.Error(w, "Cart not found for user", http.StatusNotFound)
+		return
+	}
+
+	_, itemExists := userCart[req.ProductID]
+	if !itemExists {
+		http.Error(w, "Item not found in cart", http.StatusNotFound)
+		return
+	}
+
+	if req.Quantity == 0 {
+		delete(userCart, req.ProductID)
+		log.Printf("Removed product %s from cart for user %s due to quantity 0\n", req.ProductID, req.UserID)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Item removed from cart"})
+		return
+	}
+
+	product, err := getProductFromDB(req.ProductID)
+	if err != nil {
+		http.Error(w, "Product details not found, cannot update quantity", http.StatusInternalServerError)
+		return
+	}
+	if product.Stock < req.Quantity {
+		http.Error(w, fmt.Sprintf("Not enough stock for product %s. Available: %d, Requested: %d", product.Name, product.Stock, req.Quantity), http.StatusConflict)
+		return
+	}
+
+	updatedItem := userCart[req.ProductID]
+	updatedItem.Quantity = req.Quantity
+	userCart[req.ProductID] = updatedItem
+	log.Printf("Updated quantity for product %s for user %s to %d\n", req.ProductID, req.UserID, req.Quantity)
+	
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Cart item quantity updated successfully"})
+}
+
+func removeCartItemHandler(w http.ResponseWriter, r *http.Request) {
+	setCORSHeaders(w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	if r.Method != http.MethodPost { 
+		http.Error(w, "Only POST method is allowed for removing cart item", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req RemoveCartItemRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if req.UserID == "" || req.ProductID == "" {
+		http.Error(w, "Missing required fields (user_id, product_id)", http.StatusBadRequest)
+		return
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	userCart, userExists := carts[req.UserID]
+	if !userExists {
+		http.Error(w, "Cart not found for user", http.StatusNotFound)
+		return
+	}
+
+	if _, itemExists := userCart[req.ProductID]; !itemExists {
+		http.Error(w, "Item not found in cart to remove", http.StatusNotFound)
+		return
+	}
+
+	delete(userCart, req.ProductID)
+	log.Printf("Removed product %s from cart for user %s\n", req.ProductID, req.UserID)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Item removed from cart successfully"})
+}
+
+
 func viewCartHandler(w http.ResponseWriter, r *http.Request) {
+    setCORSHeaders(w) 
 	if r.Method != http.MethodGet {
 		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
 		return
@@ -228,22 +438,19 @@ func viewCartHandler(w http.ResponseWriter, r *http.Request) {
 
 func (p Product) MarshalJSON() ([]byte, error) {
 	type Alias Product 
-	var createdAtStr, updatedAtStr string
-	if p.CreatedAt.Valid {
-		createdAtStr = p.CreatedAt.Time.Format(time.RFC3339)
-	}
+	
+	var updatedAtStr string
+
 	if p.UpdatedAt.Valid {
 		updatedAtStr = p.UpdatedAt.Time.Format(time.RFC3339)
 	}
 
 	return json.Marshal(&struct {
 		Alias
-		CreatedAt string `json:"created_at,omitempty"`
-		UpdatedAt string `json:"updated_at,omitempty"`
+		UpdatedAtStr string `json:"updated_at,omitempty"`
 	}{
 		Alias:     (Alias)(p),
-		CreatedAt: createdAtStr,
-		UpdatedAt: updatedAtStr,
+		UpdatedAtStr: updatedAtStr,
 	})
 }
 
@@ -256,12 +463,16 @@ func main() {
 		}
 	}()
 
+	http.HandleFunc("/products", listProductsHandler) 
 	http.HandleFunc("/cart/add", addToCartHandler)
 	http.HandleFunc("/cart/view", viewCartHandler)
+	http.HandleFunc("/cart/item/update", updateCartItemHandler)
+	http.HandleFunc("/cart/item/remove", removeCartItemHandler) 
+
 
 	port := 8080
 	fmt.Printf("Starting Go backend server with MySQL on port %d...\n", port)
-	log.Printf("Endpoints available:\nPOST /cart/add\nGET  /cart/view?user_id=<USER_ID>\n")
+	log.Printf("Endpoints available:\nPOST /cart/add\nPOST /cart/item/update\nPOST /cart/item/remove\nGET  /cart/view?user_id=<USER_ID>\nGET /products?category=<CATEGORY_NAME>\n")
 	if err := http.ListenAndServe(":"+strconv.Itoa(port), nil); err != nil {
 		log.Fatalf("Could not start server: %s\n", err.Error())
 	}
