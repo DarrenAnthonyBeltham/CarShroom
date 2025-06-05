@@ -188,7 +188,7 @@
                 <ul>
                     <li><a href=".././index.php">HOMEPAGE</a></li>
                     <li><a href="#cars">CARS</a></li>
-                    <li><a href="#technology">TECHNOLOGY</a></li>
+                    <li><a href=".././technology.php">TECHNOLOGY</a></li>
                     <li><a href=".././">ABOUT</a></li>
                     <li><a href="#contact">CONTACT</a></li>
                 </ul>
@@ -196,7 +196,7 @@
             <div class="overlay-secondary-links">
                 <div class="column">
                     <a href="#dealer-locator">Dealer Locator</a>
-                    <a href="#shop">Shop</a>
+                    <a href=".././cart.php">Cart</a>
                     <a href="#lifestyle">Lifestyle</a>
                 </div>
                 <div class="column">
