@@ -1,3 +1,6 @@
+<?php
+// Static $brake_products array is removed. Data will now be fetched via JavaScript.
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,7 +93,6 @@
             width: 100%;
             height: 100%; 
             object-fit: cover; 
-            object-position: center;
             display: block;
         }
         
@@ -115,19 +117,19 @@
             font-weight: 500;
             text-transform: uppercase;
         }
-         .brake-product-info .type { 
+         .brake-product-info .type {
             font-size: 0.9em;
             color: #555;
             margin-bottom: 10px;
             font-style: italic;
         }
-        .brake-product-info .details { 
+        .brake-product-info .details {
             font-size: 0.9em;
             color: #555;
             margin-bottom: 15px;
             flex-grow: 1; 
         }
-         .brake-product-info .details strong { 
+         .brake-product-info .details strong {
             color: #333;
          }
 
@@ -158,7 +160,7 @@
         .add-to-cart-button:hover {
             background-color: #8b0000; 
         }
-
+        
         #productLoadingMessage, #productErrorMessage {
             text-align: center;
             font-size: 1.1em;
@@ -168,7 +170,7 @@
         #productErrorMessage {
             color: red;
         }
-        
+
         @media (max-width: 768px) { 
             .brakes-main-title {
                 font-size: 2em;
@@ -273,11 +275,7 @@
                     const productCard = document.createElement('div');
                     productCard.classList.add('brake-product-card');
 
-                    let imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
-                    if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('../')) {
-                         imagePath = `../${imagePath}`; 
-                    }
-
+                    const imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
 
                     productCard.innerHTML = `
                         <div class="image-container">
@@ -286,7 +284,7 @@
                         <div class="brake-product-info">
                             <span class="brand">${htmlspecialchars(product.brand || 'N/A')}</span>
                             <h3>${htmlspecialchars(product.name)}</h3>
-                            <p class="type">Type: ${htmlspecialchars(product.type || 'N/A')}</p> 
+                            <p class="type">Type: ${htmlspecialchars(product.type || product.size || 'N/A')}</p> 
                             <p class="details">
                                 <strong>Features:</strong> ${htmlspecialchars(product.features || 'N/A')}<br>
                                 ${htmlspecialchars(product.description || 'No description available.')}

@@ -1,47 +1,5 @@
 <?php
-// Sample data for wheels - replace with your actual data source (e.g., database)
-$wheel_products = [
-    [
-        'id' => 1,
-        'name' => 'Forged Monoblock F-01',
-        'brand' => 'Prestige Wheels',
-        'size' => '20 inch | 5x112',
-        'finish' => 'Gloss Black',
-        'price' => '1,200.00',
-        'image' => './assets/wheels/forgedmonoblockf01.jpeg',
-        'description' => 'Ultra-lightweight forged monoblock construction for maximum performance and aggressive styling. Perfect for sports and luxury vehicles seeking an edge.'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Classic Mesh C-05',
-        'brand' => 'Heritage Rims',
-        'size' => '19 inch | 5x120',
-        'finish' => 'Silver Machined Face',
-        'price' => '950.00',
-        'image' => './assets/wheels/ClassicMeshC05.webp',
-        'description' => 'Timeless mesh design with a modern twist. Durable construction with a polished finish, offering a sophisticated look for classic and contemporary cars.'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Off-Road Dominator X-10',
-        'brand' => 'Terrain Masters',
-        'size' => '18 inch | 6x139.7',
-        'finish' => 'Matte Bronze',
-        'price' => '880.00',
-        'image' => './assets/wheels/Off-Road Dominator X-10.jpg',
-        'description' => 'Built for the toughest terrains. Reinforced alloy with a rugged matte bronze finish, providing exceptional durability and a commanding presence for trucks and SUVs.'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Aero Disc TurboFan',
-        'brand' => 'Concept Dynamics',
-        'size' => '21 inch | 5x114.3',
-        'finish' => 'Carbon Fiber & Polished Alloy',
-        'price' => '2,500.00',
-        'image' => './assets/wheels/AeroDiscTurboFan.jpg',
-        'description' => 'Aerodynamically optimized TurboFan design for reduced drag and enhanced brake cooling. Features a unique carbon fiber overlay for a futuristic appeal.'
-    ],
-];
+// Product data is now fetched from the Go backend via JavaScript.
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,11 +79,20 @@ $wheel_products = [
             box-shadow: 0 10px 25px rgba(0,0,0,0.12);
         }
 
+        .wheel-product-card .image-container {
+            width: 100%;
+            height: 280px; 
+            background-color: #f0f0f0; 
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #eee;
+        }
+
         .wheel-product-card img {
             width: 100%;
             height: 100%; 
             object-fit: cover; 
-            object-position: center;
             display: block;
         }
         
@@ -188,6 +155,16 @@ $wheel_products = [
             background-color: #2c3e50; 
         }
         
+        #productLoadingMessage, #productErrorMessage {
+            text-align: center;
+            font-size: 1.1em;
+            padding: 20px;
+            color: #555;
+        }
+        #productErrorMessage {
+            color: red;
+        }
+
         @media (max-width: 768px) { 
             .wheels-main-title {
                 font-size: 2em;
@@ -196,7 +173,7 @@ $wheel_products = [
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
                 gap: 25px;
             }
-            .wheel-product-card img {
+            .wheel-product-card .image-container { 
                 height: 250px; 
             }
         }
@@ -205,7 +182,7 @@ $wheel_products = [
             .wheels-main-title {
                 font-size: 1.7em;
             }
-            .wheel-product-card img {
+            .wheel-product-card .image-container { 
                 height: 220px;
             }
             .wheel-product-info h3 {
@@ -236,23 +213,9 @@ $wheel_products = [
             <div class="wheels-main-title-container">
                 <h1 class="wheels-main-title">High-Tech Wheels</h1>
             </div>
-            <div class="wheel-products-grid">
-                <?php foreach ($wheel_products as $wheel): ?>
-                    <div class="wheel-product-card">
-                        <img src="<?php echo htmlspecialchars($wheel['image']); ?>" alt="<?php echo htmlspecialchars($wheel['name']); ?>" onerror="this.onerror=null;this.src='https://placehold.co/600x600/cccccc/333333?text=Image+Not+Available';">
-                        <div class="wheel-product-info">
-                            <span class="brand"><?php echo htmlspecialchars($wheel['brand']); ?></span>
-                            <h3><?php echo htmlspecialchars($wheel['name']); ?></h3>
-                            <p class="details">
-                                <strong>Size:</strong> <?php echo htmlspecialchars($wheel['size']); ?><br>
-                                <strong>Finish:</strong> <?php echo htmlspecialchars($wheel['finish']); ?><br>
-                                <?php echo htmlspecialchars($wheel['description']); ?>
-                            </p>
-                            <div class="wheel-product-price">$<?php echo htmlspecialchars($wheel['price']); ?></div>
-                            <button type="button" class="add-to-cart-button" onclick="alert('<?php echo htmlspecialchars(addslashes($wheel['name'])); ?> added to cart!')">Add to Cart</button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+            <div id="productLoadingMessage">Loading wheels...</div>
+            <div id="productErrorMessage" style="display:none;"></div>
+            <div class="wheel-products-grid" id="wheelProductsGrid">
             </div>
         </section>
     </main>
@@ -268,5 +231,108 @@ $wheel_products = [
             include "../inc/footer.php";
         }
     ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsGrid = document.getElementById('wheelProductsGrid');
+            const loadingMessageEl = document.getElementById('productLoadingMessage');
+            const errorMessageEl = document.getElementById('productErrorMessage');
+            const USER_ID = "user123"; 
+
+            async function fetchProducts() {
+                loadingMessageEl.style.display = 'block';
+                errorMessageEl.style.display = 'none';
+                productsGrid.innerHTML = ''; 
+
+                try {
+                    const response = await fetch(`http://localhost:8080/products?category=wheels`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const products = await response.json();
+                    renderProducts(products);
+                } catch (error) {
+                    console.error("Error fetching wheel products:", error);
+                    errorMessageEl.textContent = 'Error loading wheels. Please try again later.';
+                    errorMessageEl.style.display = 'block';
+                } finally {
+                    loadingMessageEl.style.display = 'none';
+                }
+            }
+
+            function renderProducts(products) {
+                if (!products || products.length === 0) {
+                    productsGrid.innerHTML = '<p>No wheels found in this category.</p>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('wheel-product-card');
+
+                    // The path from the database (e.g., 'assets/wheels/image.jpg') is treated
+                    // as relative to the current file (wheels.php), which is correct.
+                    const imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
+
+                    productCard.innerHTML = `
+                        <div class="image-container">
+                            <img src="${htmlspecialchars(imagePath)}" alt="${htmlspecialchars(product.name)}" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Error';">
+                        </div>
+                        <div class="wheel-product-info">
+                            <span class="brand">${htmlspecialchars(product.brand || 'N/A')}</span>
+                            <h3>${htmlspecialchars(product.name)}</h3>
+                            <p class="details">
+                                <strong>Size:</strong> ${htmlspecialchars(product.size || 'N/A')}<br>
+                                <strong>Finish:</strong> ${htmlspecialchars(product.finish || 'N/A')}<br>
+                                ${htmlspecialchars(product.description || 'No description available.')}
+                            </p>
+                            <div class="wheel-product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <button type="button" class="add-to-cart-button" data-product-id="${product.id}" data-product-name="${htmlspecialchars(product.name)}">Add to Cart</button>
+                        </div>
+                    `;
+                    productsGrid.appendChild(productCard);
+                });
+
+                document.querySelectorAll('.add-to-cart-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.dataset.productId;
+                        const productName = this.dataset.productName;
+                        addToCart(productId, productName, 1); 
+                    });
+                });
+            }
+
+            async function addToCart(productId, productName, quantity) {
+                const payload = {
+                    user_id: USER_ID,
+                    product_id: productId,
+                    quantity: quantity
+                };
+                try {
+                    const response = await fetch('http://localhost:8080/cart/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', },
+                        body: JSON.stringify(payload),
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(`"${htmlspecialchars(productName)}" added to cart successfully!`);
+                    } else {
+                        alert(`Error adding to cart: ${result.message || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    alert('Failed to add item to cart. Please check the connection or try again later.');
+                }
+            }
+            
+            function htmlspecialchars(str) {
+                if (typeof str !== 'string') return '';
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+
+            fetchProducts();
+        });
+    </script>
 </body>
 </html>

@@ -1,47 +1,5 @@
 <?php
-// Sample data for aerodynamic wings - replace with your actual data source
-$wing_products = [
-    [
-        'id' => 1,
-        'name' => 'GT Carbon Fiber Wing',
-        'brand' => 'AeroPerformance',
-        'material' => 'High-Gloss Carbon Fiber',
-        'features' => 'Adjustable angle of attack, swan neck mounts, significant downforce',
-        'price' => '2,200.00',
-        'image' => './assets/wing/GT Carbon Fiber Wing.jpg',
-        'description' => 'Track-focused GT wing designed for maximum downforce and stability at high speeds. Lightweight and incredibly strong.'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Street Series Ducktail Spoiler',
-        'brand' => 'SubtleAero',
-        'material' => 'Paintable FRP Composite',
-        'features' => 'Classic ducktail design, easy installation, improves rear aesthetics',
-        'price' => '550.00',
-        'image' => './assets/wing/Ducktail Spoiler.webp', 
-        'description' => 'Add a touch of classic motorsport style to your street car. Enhances the vehicle\'s lines while providing a modest aerodynamic benefit.'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Active Aero Rear Wing System',
-        'brand' => 'DynamicFlow',
-        'material' => 'Aluminum & Carbon Fiber Components',
-        'features' => 'Electronically controlled, variable angle, air brake function',
-        'price' => '7,800.00',
-        'image' => './assets/wing/Aero Rear Wing System.jpg', 
-        'description' => 'State-of-the-art active aerodynamic system that adjusts wing angle based on speed and braking for optimal performance.'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Universal Roof Spoiler Extension',
-        'brand' => 'AeroPlus',
-        'material' => 'ABS Plastic - Gloss Black',
-        'features' => 'Universal fitment (with modification), enhances roofline flow',
-        'price' => '180.00',
-        'image' => './assets/wing/Universal Roof SPoiler Extensioin.jpg',
-        'description' => 'A versatile roof spoiler extension to add a sporty touch and help manage airflow over the rear of the vehicle.'
-    ],
-];
+// Product data is now fetched from the Go backend via JavaScript.
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,7 +55,7 @@ $wing_products = [
             letter-spacing: 1.5px;
             line-height: 1.3;
             padding-bottom: 10px;
-            border-bottom: 3px solid #2c3e50; /* Techy dark blue accent */
+            border-bottom: 3px solid #2c3e50; 
             display: inline-block;
         }
 
@@ -124,7 +82,7 @@ $wing_products = [
         .wing-product-card .image-container {
             width: 100%;
             height: 280px; 
-            background-color: #e8eaf6; /* Lighter techy blue background */
+            background-color: #e8eaf6; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -135,7 +93,6 @@ $wing_products = [
             width: 100%;
             height: 100%; 
             object-fit: cover; 
-            object-position: center;
             display: block;
         }
         
@@ -150,7 +107,7 @@ $wing_products = [
             font-family: 'Space Mono', monospace;
             font-size: 1.3em; 
             font-weight: 700;
-            color: #1d3557; /* Darker blue for wing product name */
+            color: #1d3557; 
             margin-bottom: 8px;
         }
         .wing-product-info .brand {
@@ -204,6 +161,16 @@ $wing_products = [
             background-color: #162841; 
         }
         
+        #productLoadingMessage, #productErrorMessage {
+            text-align: center;
+            font-size: 1.1em;
+            padding: 20px;
+            color: #555;
+        }
+        #productErrorMessage {
+            color: red;
+        }
+
         @media (max-width: 768px) { 
             .wings-main-title {
                 font-size: 2em;
@@ -252,25 +219,9 @@ $wing_products = [
             <div class="wings-main-title-container">
                 <h1 class="wings-main-title">Aerodynamic Wings & Spoilers</h1>
             </div>
-            <div class="wing-products-grid">
-                <?php foreach ($wing_products as $wing): ?>
-                    <div class="wing-product-card">
-                        <div class="image-container">
-                            <img src="<?php echo htmlspecialchars($wing['image']); ?>" alt="<?php echo htmlspecialchars($wing['name']); ?>" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Not+Available';">
-                        </div>
-                        <div class="wing-product-info">
-                            <span class="brand"><?php echo htmlspecialchars($wing['brand']); ?></span>
-                            <h3><?php echo htmlspecialchars($wing['name']); ?></h3>
-                            <p class="material">Material: <?php echo htmlspecialchars($wing['material']); ?></p>
-                            <p class="details">
-                                <strong>Features:</strong> <?php echo htmlspecialchars($wing['features']); ?><br>
-                                <?php echo htmlspecialchars($wing['description']); ?>
-                            </p>
-                            <div class="wing-product-price">$<?php echo htmlspecialchars($wing['price']); ?></div>
-                            <button type="button" class="add-to-cart-button" onclick="alert('<?php echo htmlspecialchars(addslashes($wing['name'])); ?> added to cart! (Demo)')">Add to Cart</button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+            <div id="productLoadingMessage">Loading wings & spoilers...</div>
+            <div id="productErrorMessage" style="display:none;"></div>
+            <div class="wing-products-grid" id="wingProductsGrid">
             </div>
         </section>
     </main>
@@ -286,5 +237,109 @@ $wing_products = [
             include "../inc/footer.php";
         }
     ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsGrid = document.getElementById('wingProductsGrid');
+            const loadingMessageEl = document.getElementById('productLoadingMessage');
+            const errorMessageEl = document.getElementById('productErrorMessage');
+            const USER_ID = "user123"; 
+
+            async function fetchProducts() {
+                loadingMessageEl.style.display = 'block';
+                errorMessageEl.style.display = 'none';
+                productsGrid.innerHTML = ''; 
+
+                try {
+                    const response = await fetch(`http://localhost:8080/products?category=wing`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const products = await response.json();
+                    renderProducts(products);
+                } catch (error) {
+                    console.error("Error fetching wing products:", error);
+                    errorMessageEl.textContent = 'Error loading wings. Please try again later.';
+                    errorMessageEl.style.display = 'block';
+                } finally {
+                    loadingMessageEl.style.display = 'none';
+                }
+            }
+
+            function renderProducts(products) {
+                if (!products || products.length === 0) {
+                    productsGrid.innerHTML = '<p>No wings or spoilers found in this category.</p>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('wing-product-card');
+                    
+                    // The path from the database (e.g., 'assets/wing/image.jpg') is now treated
+                    // as relative to the current file (wings.php).
+                    const imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
+
+                    productCard.innerHTML = `
+                        <div class="image-container">
+                            <img src="${htmlspecialchars(imagePath)}" alt="${htmlspecialchars(product.name)}" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Error';">
+                        </div>
+                        <div class="wing-product-info">
+                            <span class="brand">${htmlspecialchars(product.brand || 'N/A')}</span>
+                            <h3>${htmlspecialchars(product.name)}</h3>
+                            <p class="material">Material: ${htmlspecialchars(product.material || product.type || 'N/A')}</p>
+                            <p class="details">
+                                <strong>Features:</strong> ${htmlspecialchars(product.features || 'N/A')}<br>
+                                ${htmlspecialchars(product.description || 'No description available.')}
+                            </p>
+                            <div class="wing-product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <button type="button" class="add-to-cart-button" data-product-id="${product.id}" data-product-name="${htmlspecialchars(product.name)}">Add to Cart</button>
+                        </div>
+                    `;
+                    productsGrid.appendChild(productCard);
+                });
+
+                document.querySelectorAll('.add-to-cart-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.dataset.productId;
+                        const productName = this.dataset.productName;
+                        addToCart(productId, productName, 1); 
+                    });
+                });
+            }
+
+            async function addToCart(productId, productName, quantity) {
+                const payload = {
+                    user_id: USER_ID,
+                    product_id: productId,
+                    quantity: quantity
+                };
+                try {
+                    const response = await fetch('http://localhost:8080/cart/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', },
+                        body: JSON.stringify(payload),
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(`"${htmlspecialchars(productName)}" added to cart successfully!`);
+                    } else {
+                        alert(`Error adding to cart: ${result.message || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    alert('Failed to add item to cart. Please check the connection or try again later.');
+                }
+            }
+            
+            function htmlspecialchars(str) {
+                if (typeof str !== 'string') return '';
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+
+            fetchProducts();
+        });
+    </script>
 </body>
 </html>

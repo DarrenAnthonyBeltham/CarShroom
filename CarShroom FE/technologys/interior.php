@@ -1,47 +1,5 @@
 <?php
-// Sample data for luxury interior components - replace with your actual data source
-$interior_products = [
-    [
-        'id' => 1,
-        'name' => 'Bespoke Leather Racing Seats',
-        'brand' => 'Artisan Interiors',
-        'material' => 'Nappa Leather & Alcantara',
-        'features' => 'Custom stitching, carbon fiber shell, heated & ventilated',
-        'price' => '4,500.00',
-        'image' => './assets/interior/BespokeLeatherRacingSeats.webp',
-        'description' => 'Experience ultimate comfort and support with our bespoke racing seats, handcrafted to perfection with the finest materials.'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Carbon Fiber Steering Wheel',
-        'brand' => 'PerformanceGrip',
-        'material' => 'Carbon Fiber & Perforated Leather',
-        'features' => 'Ergonomic design, integrated shift lights, customizable inlay',
-        'price' => '1,800.00',
-        'image' => './assets/interior/Carbon Fiber Steering Wheel.webp',
-        'description' => 'Enhance your driving connection with this lightweight carbon fiber steering wheel, offering superior grip and a sporty aesthetic.'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Ambient Lighting Upgrade Kit',
-        'brand' => 'LumiLux',
-        'material' => 'Multi-color LED System',
-        'features' => 'App-controlled, 64 color options, dynamic lighting modes',
-        'price' => '650.00',
-        'image' => './assets/interior/Lighting Upgrade.webp',
-        'description' => 'Set the perfect mood in your cabin with our advanced ambient lighting kit, offering a spectrum of colors and effects.'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Alcantara Headliner & Pillar Kit',
-        'brand' => 'Elite Trim',
-        'material' => 'Genuine Alcantara',
-        'features' => 'Luxurious feel, improved acoustics, custom color options',
-        'price' => '2,200.00',
-        'image' => './assets/interior/Alcantara Headliner and Pillar kit.png', 
-        'description' => 'Elevate your interior to a new level of luxury with a full Alcantara headliner and pillar trim kit.'
-    ],
-];
+// Static $interior_products array is removed. Data will now be fetched via JavaScript.
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,7 +55,7 @@ $interior_products = [
             letter-spacing: 1.5px;
             line-height: 1.3;
             padding-bottom: 10px;
-            border-bottom: 3px solid #b8860b; /* Gold-like accent for luxury */
+            border-bottom: 3px solid #b8860b; 
             display: inline-block;
         }
 
@@ -124,7 +82,7 @@ $interior_products = [
         .interior-product-card .image-container {
             width: 100%;
             height: 280px; 
-            background-color: #faf0e6; /* Creamy background for luxury items */
+            background-color: #faf0e6; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -135,7 +93,6 @@ $interior_products = [
             width: 100%;
             height: 100%; 
             object-fit: cover; 
-            object-position: center;
             display: block;
         }
         
@@ -150,7 +107,7 @@ $interior_products = [
             font-family: 'Space Mono', monospace;
             font-size: 1.3em; 
             font-weight: 700;
-            color: #8B4513; /* SaddleBrown for interior product name */
+            color: #8B4513; 
             margin-bottom: 8px;
         }
         .interior-product-info .brand {
@@ -179,7 +136,7 @@ $interior_products = [
         .interior-product-price { 
             font-size: 1.5em;
             font-weight: 700;
-            color: #b8860b; /* Gold-like accent for price */
+            color: #b8860b; 
             margin-bottom: 15px;
             text-align: right;
         }
@@ -187,7 +144,7 @@ $interior_products = [
         .add-to-cart-button {
             display: block;
             width: 100%;
-            background-color: #8B4513; /* SaddleBrown for button */
+            background-color: #8B4513; 
             color: #ffffff;
             padding: 12px 20px;
             text-align: center;
@@ -201,9 +158,19 @@ $interior_products = [
             margin-top: auto; 
         }
         .add-to-cart-button:hover {
-            background-color: #7A3D0F; /* Darker brown */
+            background-color: #7A3D0F; 
         }
         
+        #productLoadingMessage, #productErrorMessage {
+            text-align: center;
+            font-size: 1.1em;
+            padding: 20px;
+            color: #555;
+        }
+        #productErrorMessage {
+            color: red;
+        }
+
         @media (max-width: 768px) { 
             .interiors-main-title {
                 font-size: 2em;
@@ -252,25 +219,9 @@ $interior_products = [
             <div class="interiors-main-title-container">
                 <h1 class="interiors-main-title">Luxury Interiors</h1>
             </div>
-            <div class="interior-products-grid">
-                <?php foreach ($interior_products as $interior): ?>
-                    <div class="interior-product-card">
-                        <div class="image-container">
-                            <img src="<?php echo htmlspecialchars($interior['image']); ?>" alt="<?php echo htmlspecialchars($interior['name']); ?>" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Not+Available';">
-                        </div>
-                        <div class="interior-product-info">
-                            <span class="brand"><?php echo htmlspecialchars($interior['brand']); ?></span>
-                            <h3><?php echo htmlspecialchars($interior['name']); ?></h3>
-                            <p class="material">Material: <?php echo htmlspecialchars($interior['material']); ?></p>
-                            <p class="details">
-                                <strong>Features:</strong> <?php echo htmlspecialchars($interior['features']); ?><br>
-                                <?php echo htmlspecialchars($interior['description']); ?>
-                            </p>
-                            <div class="interior-product-price">$<?php echo htmlspecialchars($interior['price']); ?></div>
-                            <button type="button" class="add-to-cart-button" onclick="alert('<?php echo htmlspecialchars(addslashes($interior['name'])); ?> added to cart! (Demo)')">Add to Cart</button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+            <div id="productLoadingMessage">Loading interiors...</div>
+            <div id="productErrorMessage" style="display:none;"></div>
+            <div class="interior-products-grid" id="interiorProductsGrid">
             </div>
         </section>
     </main>
@@ -286,5 +237,110 @@ $interior_products = [
             include "../inc/footer.php";
         }
     ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsGrid = document.getElementById('interiorProductsGrid');
+            const loadingMessageEl = document.getElementById('productLoadingMessage');
+            const errorMessageEl = document.getElementById('productErrorMessage');
+            const USER_ID = "user123"; 
+
+            async function fetchProducts() {
+                loadingMessageEl.style.display = 'block';
+                errorMessageEl.style.display = 'none';
+                productsGrid.innerHTML = ''; 
+
+                try {
+                    const response = await fetch(`http://localhost:8080/products?category=interior`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const products = await response.json();
+                    renderProducts(products);
+                } catch (error) {
+                    console.error("Error fetching interior products:", error);
+                    errorMessageEl.textContent = 'Error loading interiors. Please try again later.';
+                    errorMessageEl.style.display = 'block';
+                } finally {
+                    loadingMessageEl.style.display = 'none';
+                }
+            }
+
+            function renderProducts(products) {
+                if (!products || products.length === 0) {
+                    productsGrid.innerHTML = '<p>No interior components found in this category.</p>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('interior-product-card');
+
+                    // The path from the database (e.g., 'assets/interior/image.jpg') is treated
+                    // as relative to the current file (interior.php). Since both are in 'technologys',
+                    // this path is now correct.
+                    const imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
+
+                    productCard.innerHTML = `
+                        <div class="image-container">
+                            <img src="${htmlspecialchars(imagePath)}" alt="${htmlspecialchars(product.name)}" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Error';">
+                        </div>
+                        <div class="interior-product-info">
+                            <span class="brand">${htmlspecialchars(product.brand || 'N/A')}</span>
+                            <h3>${htmlspecialchars(product.name)}</h3>
+                            <p class="material">Material: ${htmlspecialchars(product.material || product.type || 'N/A')}</p>
+                            <p class="details">
+                                <strong>Features:</strong> ${htmlspecialchars(product.features || 'N/A')}<br>
+                                ${htmlspecialchars(product.description || 'No description available.')}
+                            </p>
+                            <div class="interior-product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <button type="button" class="add-to-cart-button" data-product-id="${product.id}" data-product-name="${htmlspecialchars(product.name)}">Add to Cart</button>
+                        </div>
+                    `;
+                    productsGrid.appendChild(productCard);
+                });
+
+                document.querySelectorAll('.add-to-cart-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.dataset.productId;
+                        const productName = this.dataset.productName;
+                        addToCart(productId, productName, 1); 
+                    });
+                });
+            }
+
+            async function addToCart(productId, productName, quantity) {
+                const payload = {
+                    user_id: USER_ID,
+                    product_id: productId,
+                    quantity: quantity
+                };
+                try {
+                    const response = await fetch('http://localhost:8080/cart/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', },
+                        body: JSON.stringify(payload),
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(`"${htmlspecialchars(productName)}" added to cart successfully!`);
+                    } else {
+                        alert(`Error adding to cart: ${result.message || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    alert('Failed to add item to cart. Please check the connection or try again later.');
+                }
+            }
+            
+            function htmlspecialchars(str) {
+                if (typeof str !== 'string') return '';
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+
+            fetchProducts();
+        });
+    </script>
 </body>
 </html>

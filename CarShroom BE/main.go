@@ -381,7 +381,7 @@ func removeCartItemHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, itemExists := userCart[req.ProductID]; !itemExists {
-		http.Error(w, "Item not found in cart to remove", http.StatusNotFound)
+		http.Error(w, "Item not found i n cart to remove", http.StatusNotFound)
 		return
 	}
 

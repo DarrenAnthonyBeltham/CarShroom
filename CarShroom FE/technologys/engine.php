@@ -1,47 +1,3 @@
-<?php
-$engine_products = [
-    [
-        'id' => 1,
-        'name' => 'Twin-Turbo V8 Performance Crate Engine',
-        'brand' => 'PowerTrain Pro',
-        'type' => 'Complete Engine Assembly',
-        'specs' => '4.0L, 720HP, 800Nm Torque, Forged Internals',
-        'price' => '25,500.00',
-        'image' => './assets/engine/Twin Turbo.webp', 
-        'description' => 'Unleash raw power with this fully built twin-turbo V8. Engineered for reliability and extreme performance applications.'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Performance ECU & Tuning Package',
-        'brand' => 'ChipTune Masters',
-        'type' => 'ECU Remap & Hardware',
-        'specs' => 'Up to +80HP, +120Nm Torque, Includes high-flow intake',
-        'price' => '1,950.00',
-        'image' => './assets/engine/ECU and Tuning.jpg', 
-        'description' => 'Optimize your existing engine with our advanced ECU tuning and performance hardware package for significant gains.'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Titanium Valvetronic Exhaust System',
-        'brand' => 'AeroFlow Exhausts',
-        'type' => 'Full Cat-Back System',
-        'specs' => 'Full Titanium Construction, Valved for Sound Control, -15kg Weight Reduction',
-        'price' => '6,200.00',
-        'image' => './assets/engine/Titanium Valvetronic Exhaust System.jpg', 
-        'description' => 'Experience an exhilarating exhaust note and performance gains with this ultra-lightweight titanium valved exhaust system.'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Performance Intercooler Kit',
-        'brand' => 'CoolBoost',
-        'type' => 'Front Mount Intercooler',
-        'specs' => 'Bar and Plate Core, Reduces Intake Temps by up to 20°C',
-        'price' => '980.00',
-        'image' => './assets/engine/Performance Intercooler.jpg',
-        'description' => 'Keep your intake temperatures low for consistent power with this high-efficiency front mount intercooler kit.'
-    ],
-];
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,7 +52,7 @@ $engine_products = [
             letter-spacing: 1.5px;
             line-height: 1.3;
             padding-bottom: 10px;
-            border-bottom: 3px solid #d35400; /* Engine-themed accent (e.g., burnt orange) */
+            border-bottom: 3px solid #d35400; 
             display: inline-block;
         }
 
@@ -123,7 +79,7 @@ $engine_products = [
         .engine-product-card .image-container {
             width: 100%;
             height: 280px; 
-            background-color: #343a40; /* Dark background for engine parts */
+            background-color: #343a40; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -133,9 +89,10 @@ $engine_products = [
         .engine-product-card img {
             width: 100%;
             height: 100%; 
-            object-fit: cover; 
-            object-position: center;
+            object-fit: contain; 
             display: block;
+            max-width: 100%; 
+            max-height: 100%;
         }
         
         .engine-product-info { 
@@ -149,7 +106,7 @@ $engine_products = [
             font-family: 'Space Mono', monospace;
             font-size: 1.3em; 
             font-weight: 700;
-            color: #b84300; /* Burnt orange for engine product name */
+            color: #b84300; 
             margin-bottom: 8px;
         }
         .engine-product-info .brand {
@@ -202,6 +159,16 @@ $engine_products = [
         .add-to-cart-button:hover {
             background-color: #a03700; 
         }
+
+        #productLoadingMessage, #productErrorMessage {
+            text-align: center;
+            font-size: 1.1em;
+            padding: 20px;
+            color: #555;
+        }
+        #productErrorMessage {
+            color: red;
+        }
         
         @media (max-width: 768px) { 
             .engines-main-title {
@@ -251,25 +218,9 @@ $engine_products = [
             <div class="engines-main-title-container">
                 <h1 class="engines-main-title">Engines & Powertrains</h1>
             </div>
-            <div class="engine-products-grid">
-                <?php foreach ($engine_products as $engine): ?>
-                    <div class="engine-product-card">
-                        <div class="image-container">
-                            <img src="<?php echo htmlspecialchars($engine['image']); ?>" alt="<?php echo htmlspecialchars($engine['name']); ?>" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Not+Available';">
-                        </div>
-                        <div class="engine-product-info">
-                            <span class="brand"><?php echo htmlspecialchars($engine['brand']); ?></span>
-                            <h3><?php echo htmlspecialchars($engine['name']); ?></h3>
-                            <p class="type">Type: <?php echo htmlspecialchars($engine['type']); ?></p>
-                            <p class="details">
-                                <strong>Specs:</strong> <?php echo htmlspecialchars($engine['specs']); ?><br>
-                                <?php echo htmlspecialchars($engine['description']); ?>
-                            </p>
-                            <div class="engine-product-price">$<?php echo htmlspecialchars($engine['price']); ?></div>
-                            <button type="button" class="add-to-cart-button" onclick="alert('<?php echo htmlspecialchars(addslashes($engine['name'])); ?> added to cart! (Demo)')">Add to Cart</button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+            <div id="productLoadingMessage">Loading engines...</div>
+            <div id="productErrorMessage" style="display:none;"></div>
+            <div class="engine-products-grid" id="engineProductsGrid">
             </div>
         </section>
     </main>
@@ -285,5 +236,110 @@ $engine_products = [
             include "../inc/footer.php";
         }
     ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsGrid = document.getElementById('engineProductsGrid');
+            const loadingMessageEl = document.getElementById('productLoadingMessage');
+            const errorMessageEl = document.getElementById('productErrorMessage');
+            const USER_ID = "user123"; 
+
+            async function fetchProducts() {
+                loadingMessageEl.style.display = 'block';
+                errorMessageEl.style.display = 'none';
+                productsGrid.innerHTML = ''; 
+
+                try {
+                    const response = await fetch(`http://localhost:8080/products?category=engine`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const products = await response.json();
+                    renderProducts(products);
+                } catch (error) {
+                    console.error("Error fetching engine products:", error);
+                    errorMessageEl.textContent = 'Error loading engines. Please try again later.';
+                    errorMessageEl.style.display = 'block';
+                } finally {
+                    loadingMessageEl.style.display = 'none';
+                }
+            }
+
+            function renderProducts(products) {
+                if (!products || products.length === 0) {
+                    productsGrid.innerHTML = '<p>No engines or powertrains found in this category.</p>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('engine-product-card');
+
+                    let imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
+                    if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('../')) {
+                         imagePath = `../${imagePath}`; 
+                    }
+
+                    productCard.innerHTML = `
+                        <div class="image-container">
+                            <img src="${htmlspecialchars(imagePath)}" alt="${htmlspecialchars(product.name)}" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Error';">
+                        </div>
+                        <div class="engine-product-info">
+                            <span class="brand">${htmlspecialchars(product.brand || 'N/A')}</span>
+                            <h3>${htmlspecialchars(product.name)}</h3>
+                            <p class="type">Type: ${htmlspecialchars(product.type || 'N/A')}</p>
+                            <p class="details">
+                                <strong>Specs:</strong> ${htmlspecialchars(product.features || 'N/A')}<br>
+                                ${htmlspecialchars(product.description || 'No description available.')}
+                            </p>
+                            <div class="engine-product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <button type="button" class="add-to-cart-button" data-product-id="${product.id}" data-product-name="${htmlspecialchars(product.name)}">Add to Cart</button>
+                        </div>
+                    `;
+                    productsGrid.appendChild(productCard);
+                });
+
+                document.querySelectorAll('.add-to-cart-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.dataset.productId;
+                        const productName = this.dataset.productName;
+                        addToCart(productId, productName, 1); 
+                    });
+                });
+            }
+
+            async function addToCart(productId, productName, quantity) {
+                const payload = {
+                    user_id: USER_ID,
+                    product_id: productId,
+                    quantity: quantity
+                };
+                try {
+                    const response = await fetch('http://localhost:8080/cart/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', },
+                        body: JSON.stringify(payload),
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(`"${htmlspecialchars(productName)}" added to cart successfully!`);
+                    } else {
+                        alert(`Error adding to cart: ${result.message || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    alert('Failed to add item to cart. Please check the connection or try again later.');
+                }
+            }
+            
+            function htmlspecialchars(str) {
+                if (typeof str !== 'string') return '';
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+
+            fetchProducts();
+        });
+    </script>
 </body>
 </html>

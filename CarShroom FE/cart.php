@@ -89,7 +89,7 @@
             max-height: 80px;
             object-fit: contain;
             border-radius: 4px;
-            background-color: #f8f8f8; /* Light background for image area */
+            background-color: #f8f8f8; 
         }
 
         .cart-item-info h3 {
@@ -398,9 +398,8 @@
                     const lineTotal = productPrice * item.quantity;
                     subtotal += lineTotal;
 
-                    let imagePath = item.product.image_url || 'https://placehold.co/100x80/cccccc/333333?text=No+Image';
-                    if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('../assets/')) {
-                    }
+                    // FIX: Construct the correct relative path based on file structure
+                    let imagePath = `technologys/${item.product.image_url || ''}`;
 
                     itemElement.innerHTML = `
                         <div class="cart-item-image">

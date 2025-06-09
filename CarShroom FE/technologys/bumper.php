@@ -1,48 +1,3 @@
-<?php
-// Sample data for bumper and aero systems - replace with your actual data source
-$bumper_products = [
-    [
-        'id' => 1,
-        'name' => 'Aggressor V1 Front Bumper',
-        'brand' => 'Aero Dynamics',
-        'material' => 'Carbon Fiber with Steel Reinforcement',
-        'features' => 'Integrated LED DRLs, improved airflow, aggressive styling',
-        'price' => '1,850.00',
-        'image' => './assets/bumper/Aggressor V1 Front Bumper.jpg', 
-        'description' => 'Transform the look of your vehicle with the Aggressor V1. Full carbon fiber construction for light weight and strength, with functional air ducts.'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Stealth Rear Diffuser Bumper',
-        'brand' => 'StealthWerks',
-        'material' => 'Reinforced Polypropylene',
-        'features' => 'Integrated quad-tip exhaust cutouts, functional rear diffuser',
-        'price' => '1,300.00',
-        'image' => './assets/bumper/Stealth Rear Diffuser Bumper.webp', 
-        'description' => 'Enhance rear aerodynamics and achieve a sportier look. Designed for perfect fitment and durability.'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Off-Road Steel Winch Bumper',
-        'brand' => 'TrailGuard',
-        'material' => 'Heavy-Duty Powder-Coated Steel',
-        'features' => 'Winch mount (up to 12,000 lbs), D-ring shackles, integrated light bar slots',
-        'price' => '2,100.00',
-        'image' => './assets/bumper/Off Road Steel Winch Bumper.webp', 
-        'description' => 'Built for extreme off-road conditions. Provides maximum protection and recovery options for your truck or SUV.'
-    ],
-    [
-        'id' => 4,
-        'name' => 'GT Sport Side Skirts (Pair)',
-        'brand' => 'Velocity Aero',
-        'material' => 'Fiberglass Reinforced Plastic (FRP)',
-        'features' => 'Aerodynamic profile, paint-ready finish',
-        'price' => '750.00',
-        'image' => './assets/bumper/SideSkirt.webp', 
-        'description' => 'Complete the sporty look of your vehicle with these sleek GT Sport side skirts. Designed to improve airflow along the vehicle sides.'
-    ],
-];
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,7 +52,7 @@ $bumper_products = [
             letter-spacing: 1.5px;
             line-height: 1.3;
             padding-bottom: 10px;
-            border-bottom: 3px solid #3498db; /* Bumper-themed accent color (e.g., cool blue) */
+            border-bottom: 3px solid #3498db; 
             display: inline-block;
         }
 
@@ -124,7 +79,7 @@ $bumper_products = [
         .bumper-product-card .image-container {
             width: 100%;
             height: 280px; 
-            background-color: #eceff1; /* Light blue-grey background */
+            background-color: #eceff1; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -134,9 +89,10 @@ $bumper_products = [
         .bumper-product-card img {
             width: 100%;
             height: 100%; 
-            object-fit: cover; 
-            object-position: center;
+            object-fit: contain; 
             display: block;
+            max-width: 100%; 
+            max-height: 100%;
         }
         
         .bumper-product-info { 
@@ -150,7 +106,7 @@ $bumper_products = [
             font-family: 'Space Mono', monospace;
             font-size: 1.3em; 
             font-weight: 700;
-            color: #2980b9; /* Darker blue for bumper product name */
+            color: #2980b9; 
             margin-bottom: 8px;
         }
         .bumper-product-info .brand {
@@ -204,6 +160,16 @@ $bumper_products = [
             background-color: #2471a3; 
         }
         
+        #productLoadingMessage, #productErrorMessage {
+            text-align: center;
+            font-size: 1.1em;
+            padding: 20px;
+            color: #555;
+        }
+        #productErrorMessage {
+            color: red;
+        }
+
         @media (max-width: 768px) { 
             .bumpers-main-title {
                 font-size: 2em;
@@ -252,25 +218,9 @@ $bumper_products = [
             <div class="bumpers-main-title-container">
                 <h1 class="bumpers-main-title">Performance Bumpers & Aero</h1>
             </div>
-            <div class="bumper-products-grid">
-                <?php foreach ($bumper_products as $bumper): ?>
-                    <div class="bumper-product-card">
-                        <div class="image-container">
-                            <img src="<?php echo htmlspecialchars($bumper['image']); ?>" alt="<?php echo htmlspecialchars($bumper['name']); ?>" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Not+Available';">
-                        </div>
-                        <div class="bumper-product-info">
-                            <span class="brand"><?php echo htmlspecialchars($bumper['brand']); ?></span>
-                            <h3><?php echo htmlspecialchars($bumper['name']); ?></h3>
-                            <p class="material">Material: <?php echo htmlspecialchars($bumper['material']); ?></p>
-                            <p class="details">
-                                <strong>Features:</strong> <?php echo htmlspecialchars($bumper['features']); ?><br>
-                                <?php echo htmlspecialchars($bumper['description']); ?>
-                            </p>
-                            <div class="bumper-product-price">$<?php echo htmlspecialchars($bumper['price']); ?></div>
-                            <button type="button" class="add-to-cart-button" onclick="alert('<?php echo htmlspecialchars(addslashes($bumper['name'])); ?> added to cart! (Demo)')">Add to Cart</button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+            <div id="productLoadingMessage">Loading bumpers...</div>
+            <div id="productErrorMessage" style="display:none;"></div>
+            <div class="bumper-products-grid" id="bumperProductsGrid">
             </div>
         </section>
     </main>
@@ -286,5 +236,110 @@ $bumper_products = [
             include "../inc/footer.php";
         }
     ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsGrid = document.getElementById('bumperProductsGrid');
+            const loadingMessageEl = document.getElementById('productLoadingMessage');
+            const errorMessageEl = document.getElementById('productErrorMessage');
+            const USER_ID = "user123"; 
+
+            async function fetchProducts() {
+                loadingMessageEl.style.display = 'block';
+                errorMessageEl.style.display = 'none';
+                productsGrid.innerHTML = ''; 
+
+                try {
+                    const response = await fetch(`http://localhost:8080/products?category=bumper`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const products = await response.json();
+                    renderProducts(products);
+                } catch (error) {
+                    console.error("Error fetching bumper products:", error);
+                    errorMessageEl.textContent = 'Error loading bumpers. Please try again later.';
+                    errorMessageEl.style.display = 'block';
+                } finally {
+                    loadingMessageEl.style.display = 'none';
+                }
+            }
+
+            function renderProducts(products) {
+                if (!products || products.length === 0) {
+                    productsGrid.innerHTML = '<p>No bumpers or aero parts found in this category.</p>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('bumper-product-card');
+
+                    let imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
+                    if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('../')) {
+                         imagePath = `../${imagePath}`; 
+                    }
+
+                    productCard.innerHTML = `
+                        <div class="image-container">
+                            <img src="${htmlspecialchars(imagePath)}" alt="${htmlspecialchars(product.name)}" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/333333?text=Image+Error';">
+                        </div>
+                        <div class="bumper-product-info">
+                            <span class="brand">${htmlspecialchars(product.brand || 'N/A')}</span>
+                            <h3>${htmlspecialchars(product.name)}</h3>
+                            <p class="material">Material: ${htmlspecialchars(product.material || 'N/A')}</p>
+                            <p class="details">
+                                <strong>Features:</strong> ${htmlspecialchars(product.features || 'N/A')}<br>
+                                ${htmlspecialchars(product.description || 'No description available.')}
+                            </p>
+                            <div class="bumper-product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <button type="button" class="add-to-cart-button" data-product-id="${product.id}" data-product-name="${htmlspecialchars(product.name)}">Add to Cart</button>
+                        </div>
+                    `;
+                    productsGrid.appendChild(productCard);
+                });
+
+                document.querySelectorAll('.add-to-cart-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.dataset.productId;
+                        const productName = this.dataset.productName;
+                        addToCart(productId, productName, 1); 
+                    });
+                });
+            }
+
+            async function addToCart(productId, productName, quantity) {
+                const payload = {
+                    user_id: USER_ID,
+                    product_id: productId,
+                    quantity: quantity
+                };
+                try {
+                    const response = await fetch('http://localhost:8080/cart/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', },
+                        body: JSON.stringify(payload),
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(`"${htmlspecialchars(productName)}" added to cart successfully!`);
+                    } else {
+                        alert(`Error adding to cart: ${result.message || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    alert('Failed to add item to cart. Please check the connection or try again later.');
+                }
+            }
+            
+            function htmlspecialchars(str) {
+                if (typeof str !== 'string') return '';
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+
+            fetchProducts();
+        });
+    </script>
 </body>
 </html>
