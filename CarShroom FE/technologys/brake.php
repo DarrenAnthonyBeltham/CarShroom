@@ -1,6 +1,3 @@
-<?php
-// Static $brake_products array is removed. Data will now be fetched via JavaScript.
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -233,10 +230,14 @@
     ?>
 
     <?php 
+        if (file_exists("../inc/popupaddtocart.php")) {
+            include "../inc/popupaddtocart.php";
+        }
         if (file_exists("../inc/footer.php")) { 
             include "../inc/footer.php";
         }
     ?>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const productsGrid = document.getElementById('brakeProductsGrid');
@@ -305,7 +306,7 @@
                 });
             }
 
-            async function addToCart(productId, productName, quantity) {
+           async function addToCart(productId, productName, quantity) {
                 const payload = {
                     user_id: USER_ID,
                     product_id: productId,
@@ -319,13 +320,13 @@
                     });
                     const result = await response.json();
                     if (response.ok) {
-                        alert(`"${htmlspecialchars(productName)}" added to cart successfully!`);
+                        showCartPopup(`"${htmlspecialchars(productName)}" added to cart successfully!`);
                     } else {
-                        alert(`Error adding to cart: ${result.message || 'Unknown error'}`);
+                        showCartPopup(`Error: ${result.message || 'Unknown error'}`, true);
                     }
                 } catch (error) {
                     console.error('Error adding to cart:', error);
-                    alert('Failed to add item to cart. Please check the connection or try again later.');
+                    showCartPopup('Failed to add item to cart. Please check the backend connection.', true);
                 }
             }
             

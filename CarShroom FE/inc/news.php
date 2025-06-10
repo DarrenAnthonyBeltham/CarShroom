@@ -20,7 +20,6 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
             overflow: hidden;
             font-family: 'Space Mono', monospace;
-            margin-top: 70px;
         }
 
         @keyframes fadeInSlideUp {

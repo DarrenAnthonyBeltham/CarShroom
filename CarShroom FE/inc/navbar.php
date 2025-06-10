@@ -186,23 +186,23 @@
         <div class="overlay-content-area">
             <nav class="overlay-main-nav">
                 <ul>
-                    <li><a href=".././index.php">HOMEPAGE</a></li>
-                    <li><a href="#cars">CARS</a></li>
-                    <li><a href=".././technology.php">TECHNOLOGY</a></li>
-                    <li><a href=".././">ABOUT</a></li>
-                    <li><a href="#contact">CONTACT</a></li>
+                    <li><a href="/CarShroom%20FE/index.php">HOMEPAGE</a></li>
+                    <li><a href="/CarShroom%20FE/cars.php">CARS</a></li>
+                    <li><a href="/CarShroom%20FE/technology.php">TECHNOLOGY</a></li>
+                    <li><a href="/CarShroom%20FE/aboutus.php">ABOUT</a></li>
+                    <li><a href="/CarShroom%20FE/contact.php">CONTACT</a></li>
                 </ul>
             </nav>
             <div class="overlay-secondary-links">
                 <div class="column">
-                    <a href="#dealer-locator">Dealer Locator</a>
-                    <a href=".././cart.php">Cart</a>
-                    <a href="#lifestyle">Lifestyle</a>
+                    <a href="#">Dealer Locator</a>
+                    <a href="/CarShroom%20FE/cart.php">Cart</a>
+                    <a href="#">Lifestyle</a>
                 </div>
                 <div class="column">
-                    <a href="#careers">Careers</a>
-                    <a href="#press">Press</a>
-                    <a href="#news">News</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Press</a>
+                    <a href="#">News</a>
                 </div>
             </div>
         </div>
@@ -230,6 +230,7 @@
                     if (link.getAttribute('href').startsWith('#') && overlayMenu.classList.contains('open')) {
                         toggleMenu();
                     }
+                    // For non-anchor links, the page will navigate, so the menu will close automatically.
                 });
             });
         }

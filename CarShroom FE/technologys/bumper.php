@@ -89,10 +89,8 @@
         .bumper-product-card img {
             width: 100%;
             height: 100%; 
-            object-fit: contain; 
+            object-fit: cover; 
             display: block;
-            max-width: 100%; 
-            max-height: 100%;
         }
         
         .bumper-product-info { 
@@ -232,6 +230,9 @@
     ?>
 
     <?php 
+        if (file_exists("../inc/popupaddtocart.php")) {
+            include "../inc/popupaddtocart.php";
+        }
         if (file_exists("../inc/footer.php")) { 
             include "../inc/footer.php";
         }
@@ -274,11 +275,8 @@
                 products.forEach(product => {
                     const productCard = document.createElement('div');
                     productCard.classList.add('bumper-product-card');
-
-                    let imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
-                    if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('../')) {
-                         imagePath = `../${imagePath}`; 
-                    }
+                    
+                    const imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
 
                     productCard.innerHTML = `
                         <div class="image-container">
@@ -287,7 +285,7 @@
                         <div class="bumper-product-info">
                             <span class="brand">${htmlspecialchars(product.brand || 'N/A')}</span>
                             <h3>${htmlspecialchars(product.name)}</h3>
-                            <p class="material">Material: ${htmlspecialchars(product.material || 'N/A')}</p>
+                            <p class="material">Material: ${htmlspecialchars(product.material || product.type || 'N/A')}</p>
                             <p class="details">
                                 <strong>Features:</strong> ${htmlspecialchars(product.features || 'N/A')}<br>
                                 ${htmlspecialchars(product.description || 'No description available.')}
@@ -308,7 +306,7 @@
                 });
             }
 
-            async function addToCart(productId, productName, quantity) {
+          async function addToCart(productId, productName, quantity) {
                 const payload = {
                     user_id: USER_ID,
                     product_id: productId,
@@ -322,13 +320,13 @@
                     });
                     const result = await response.json();
                     if (response.ok) {
-                        alert(`"${htmlspecialchars(productName)}" added to cart successfully!`);
+                        showCartPopup(`"${htmlspecialchars(productName)}" added to cart successfully!`);
                     } else {
-                        alert(`Error adding to cart: ${result.message || 'Unknown error'}`);
+                        showCartPopup(`Error: ${result.message || 'Unknown error'}`, true);
                     }
                 } catch (error) {
                     console.error('Error adding to cart:', error);
-                    alert('Failed to add item to cart. Please check the connection or try again later.');
+                    showCartPopup('Failed to add item to cart. Please check the backend connection.', true);
                 }
             }
             

@@ -315,12 +315,6 @@
     </main>
 
     <?php 
-        if (file_exists("inc/news.php")) { 
-            include "inc/news.php";
-        }
-    ?>
-
-    <?php 
         if (file_exists("inc/footer.php")) { 
             include "inc/footer.php";
         }

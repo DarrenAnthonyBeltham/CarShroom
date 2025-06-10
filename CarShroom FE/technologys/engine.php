@@ -1,3 +1,6 @@
+<?php
+// Product data is now fetched from the Go backend via JavaScript.
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,10 +92,8 @@
         .engine-product-card img {
             width: 100%;
             height: 100%; 
-            object-fit: contain; 
+            object-fit: cover; 
             display: block;
-            max-width: 100%; 
-            max-height: 100%;
         }
         
         .engine-product-info { 
@@ -275,10 +276,10 @@
                     const productCard = document.createElement('div');
                     productCard.classList.add('engine-product-card');
 
-                    let imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
-                    if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('../')) {
-                         imagePath = `../${imagePath}`; 
-                    }
+                    // The path from the database (e.g., 'assets/engine/image.jpg') is treated
+                    // as relative to the current file (engine.php). Since both are in 'technologys',
+                    // this path is now correct.
+                    const imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
 
                     productCard.innerHTML = `
                         <div class="image-container">
@@ -287,7 +288,7 @@
                         <div class="engine-product-info">
                             <span class="brand">${htmlspecialchars(product.brand || 'N/A')}</span>
                             <h3>${htmlspecialchars(product.name)}</h3>
-                            <p class="type">Type: ${htmlspecialchars(product.type || 'N/A')}</p>
+                            <p class="type">Type: ${htmlspecialchars(product.type || product.size || 'N/A')}</p>
                             <p class="details">
                                 <strong>Specs:</strong> ${htmlspecialchars(product.features || 'N/A')}<br>
                                 ${htmlspecialchars(product.description || 'No description available.')}
