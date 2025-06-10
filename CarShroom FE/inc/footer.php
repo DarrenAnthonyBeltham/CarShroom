@@ -136,15 +136,15 @@
             <div class="footer-column">
                 <h3>Buy</h3>
                 <ul>
-                    <li><a href="#">Current vehicle offers</a></li>
-                    <li><a href="#">Price list and Brochure</a></li>
+                    <li><a href="/CarShroom%20FE/offers.php">Current vehicle offers</a></li>
+                    <li><a href="/CarShroom%20FE/pricelistandbrochure.php">Price list and Brochure</a></li>
                 </ul>
             </div>
 
             <div class="footer-column">
                 <h3>Shopping Guide</h3>
                 <ul>
-                    <li><a href="#">Test Drive</a></li>
+                    <li><a href="/CarShroom%20FE/testdrive.php">Test Drive</a></li>
                     <li><a href="/CarShroom%20FE/dealerlocator.php">Find a Dealer</a></li>
                 </ul>
             </div>

@@ -202,7 +202,7 @@
                 <div class="column">
                     <a href="/CarShroom%20FE/careers.php">Careers</a>
                     <a href="/CarShroom%20FE/press.php">Press</a>
-                    <a href="/CarShroom%20FE/newsletter.php">News</a>
+                    <a href="/CarShroom%20FE/newsletter.php">Subscribe</a>
                 </div>
             </div>
         </div>

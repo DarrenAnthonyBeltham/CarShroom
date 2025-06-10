@@ -152,7 +152,16 @@
         .sidebar-form h3 { font-family: 'Space Mono', monospace; font-size: 1.6em; margin-bottom: 25px; }
         .sidebar-form .form-group { margin-bottom: 20px; position: relative; } 
         .sidebar-form label { display: block; margin-bottom: 6px; font-size: 0.9em; color: #555; }
-        .sidebar-form input, .sidebar-form textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.95em; }
+        .sidebar-form input, .sidebar-form select, .sidebar-form textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.95em; }
+        .sidebar-form select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px 12px;
+        }
         .sidebar-form textarea { min-height: 120px; resize: vertical; }
         .sidebar-form input.invalid, .sidebar-form textarea.invalid { border-color: #e74c3c; } 
         
@@ -278,8 +287,14 @@
                     <input type="email" id="formEmail" name="email" required>
                 </div>
                 <div class="form-group">
-                    <label for="formAddress">Address</label>
-                    <input type="text" id="formAddress" name="address">
+                    <label for="formService">Service Type</label>
+                    <select id="formService" name="service">
+                        <option value="">Select a service (optional)</option>
+                        <option value="Annual Maintenance">Annual Maintenance</option>
+                        <option value="Performance Tuning">Performance Tuning</option>
+                        <option value="Detailing & Restoration">Detailing & Restoration</option>
+                        <option value="Other">Other Inquiry</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="formMessage">Message*</label>
@@ -367,7 +382,7 @@
                 contactForm.addEventListener('submit', function(event) {
                     if (!this.checkValidity()) {
                         event.preventDefault();
-                        this.querySelector('.invalid').focus();
+                        this.querySelector('.invalid, :invalid').focus();
                     } else {
                         alert('Form submitted successfully!');
                     }
