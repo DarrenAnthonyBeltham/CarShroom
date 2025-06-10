@@ -146,7 +146,7 @@
                 <h3>Shopping Guide</h3>
                 <ul>
                     <li><a href="#">Test Drive</a></li>
-                    <li><a href="#">Find a Dealer</a></li>
+                    <li><a href="/CarShroom%20FE/dealerlocator.php">Find a Dealer</a></li>
                 </ul>
             </div>
 
@@ -161,8 +161,8 @@
             <div class="footer-column">
                 <h3>Our Brand</h3>
                 <ul>
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">About CarShroom</a></li>
+                    <li><a href="/CarShroom%20FE/contact.php">Contact</a></li>
+                    <li><a href="/CarShroom%20FE/aboutus.php">About CarShroom</a></li>
                 </ul>
             </div>
         </div>

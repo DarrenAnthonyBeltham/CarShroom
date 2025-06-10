@@ -195,14 +195,14 @@
             </nav>
             <div class="overlay-secondary-links">
                 <div class="column">
-                    <a href="#">Dealer Locator</a>
+                    <a href="/CarShroom%20FE/dealerlocator.php">Dealer Locator</a>
                     <a href="/CarShroom%20FE/cart.php">Cart</a>
-                    <a href="#">Lifestyle</a>
+                    <a href="/CarShroom%20FE/lifestyle.php">Lifestyle</a>
                 </div>
                 <div class="column">
-                    <a href="#">Careers</a>
-                    <a href="#">Press</a>
-                    <a href="#">News</a>
+                    <a href="/CarShroom%20FE/careers.php">Careers</a>
+                    <a href="/CarShroom%20FE/press.php">Press</a>
+                    <a href="/CarShroom%20FE/newsletter.php">News</a>
                 </div>
             </div>
         </div>
@@ -230,7 +230,6 @@
                     if (link.getAttribute('href').startsWith('#') && overlayMenu.classList.contains('open')) {
                         toggleMenu();
                     }
-                    // For non-anchor links, the page will navigate, so the menu will close automatically.
                 });
             });
         }

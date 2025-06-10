@@ -438,7 +438,7 @@
             <div class="indicator"></div>
             <div class="indicator"></div>
         </div>
-        <a href="#" class="view-all">View All News</a>
+        <a href="/CarShroom%20FE/press.php" class="view-all">View All News</a>
     </div>
     </div>
 
