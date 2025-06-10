@@ -252,6 +252,7 @@
                             <tr data-category="<?php echo htmlspecialchars($vehicle['category']); ?>">
                                 <td data-label="Vehicle">
                                     <div class="vehicle-name"><?php echo htmlspecialchars($vehicle['name']); ?></div>
+                                    <div class="vehicle-spec"><?php echo htmlspecialchars($vehicle['spec']); ?></div>
                                 </td>
                                 <td data-label="Specification" class="vehicle-spec"><?php echo htmlspecialchars($vehicle['spec']); ?></td>
                                 <td data-label="Price" class="vehicle-price">$<?php echo number_format((float) str_replace(',', '', $vehicle['price']), 2); ?></td>

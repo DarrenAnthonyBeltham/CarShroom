@@ -1,515 +1,312 @@
-<?php
-$cars = [
-    [
-        'image' => '../assets/venomf5.jpg',
-        'title' => 'Hennessey Venom F5',
-        'description' => 'The Hennessey Venom F5 is an American-built hypercar equipped with a bespoke 6.6-liter twin-turbocharged V8 engine, crankshafted to deliver 1,817 horsepower and 1,193 lb-ft of torque. With its carbon-fiber chassis and aggressive aerodynamics, the Venom F5 is engineered to eclipse 300 mph and accelerate from 0–60 mph in under 2 seconds.',
-        'alt_text' => 'Hennessey Venom F5'
-    ],
-    [
-        'image' => '../assets/laferrari.jpg',
-        'title' => 'Ferrari LaFerrari',
-        'description' => 'The Ferrari LaFerrari is a limited-production hybrid hypercar that marries a 6.3-liter V12 (789 hp) with an electric KERS motor (161 hp) to produce a combined 950 horsepower. Its F1-derived HY-KERS system enables instantaneous torque delivery, while its carbon-fiber monocoque and active aerodynamics keep it planted through corners and at speeds exceeding 217 mph.',
-        'alt_text' => 'Ferrari LaFerrari'
-    ],
-    [
-        'image' => '../assets/Aston Martin Valkyrie.webp',
-        'title' => 'Aston Martin Valkyrie',
-        'description' => 'The Aston Martin Valkyrie is a road-legal hypercar co-developed with Red Bull Advanced Technologies. Powered by a naturally aspirated 6.5-liter Cosworth V12 (1,016 hp) paired with a 160 kW electric motor (160 hp), it churns out a total of 1,176 horsepower. Its extreme downforce aerodynamics, active suspension, and carbon-fiber tub derive directly from Formula 1, aiming for lap-record performance on any circuit.',
-        'alt_text' => 'Aston Martin Valkyrie'
-    ]
-];
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Listings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Hypercar Collection - CarShroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
+        html {
             box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa; 
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .page-container {
-            max-width: 900px; 
-            margin: 20px auto; 
-            padding: 0 15px; 
-        }
-
-        .car-card {
-            background-color: #ffffff; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
-            margin-bottom: 30px; 
-            overflow: hidden; 
-            display: grid;
-            grid-template-columns: 2fr 3fr; 
-            gap: 0px; 
-        }
-
-        .car-image-container {
-            overflow: hidden; 
-        }
-
-        .car-image-container img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover; 
-        }
-
-        .car-info {
-            padding: 25px 30px; 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; 
+            margin: 0;
+            background-color: #000;
+            color: #fff;
+            line-height: 1.7;
+            overflow: hidden;
         }
         
-        .car-info-main {
+        main.car-showcase-container {
+            width: 100%;
+            height: calc(100vh - 70px);
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -ms-overflow-style: none;  
+            scrollbar-width: none;  
+        }
+        
+        main.car-showcase-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .car-section {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            scroll-snap-align: start;
+            flex-shrink: 0;
         }
 
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            transform: scale(1.05);
+            transition: transform 8s ease-out;
+        }
+        .car-section.is-visible .background-image {
+            transform: scale(1);
+        }
+
+
+        .car-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, transparent 50%);
+        }
+
+        .car-content {
+            z-index: 1;
+            max-width: 900px;
+            margin-bottom: 5vh;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out 0.4s, transform 1s ease-out 0.4s;
+        }
+        
+        .car-section.is-visible .car-content {
+             opacity: 1;
+             transform: translateY(0);
+        }
+
+
         .car-title {
-            font-size: 1.75em; 
-            font-weight: 700; 
-            color: #2d3748; 
-            margin-bottom: 12px;
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            margin: 0;
+        }
+        
+        .car-brand {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
         }
 
         .car-description {
-            font-size: 0.95em;
-            color: #4a5568; 
-            margin-bottom: 20px; 
-            line-height: 1.7;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 20px auto 30px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        .car-actions-container {
+        .car-specs {
             display: flex;
-            flex-direction: column; 
-            align-items: flex-end; 
-            gap: 12px; 
-            margin-top: auto; 
-        }
-
-        .order-now {
-            background-color: #2d3748; 
-            color: #ffffff; 
-            border: none;
-            padding: 12px 25px; 
-            border-radius: 4px; 
-            font-size: 0.9em;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            min-width: 180px; 
-            transition: background-color 0.2s ease;
-        }
-
-        .order-now:hover {
-            background-color: #1a202c; 
-        }
-
-        .keep-informed {
-            color: #4a5568; 
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .keep-informed:hover {
-            color: #2d3748; 
-            text-decoration: underline;
-        }
-
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0;
-            top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.6); 
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto; 
-            padding: 25px 35px;
-            border: 1px solid #ddd;
-            width: 80%; 
-            max-width: 600px; 
-            border-radius: 8px;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .modal-close-button {
-            color: #aaa;
-            float: right; 
-            font-size: 28px;
-            font-weight: bold;
-            position: absolute;
-            top: 10px;
-            right: 20px;
-        }
-
-        .modal-close-button:hover,
-        .modal-close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        #modalCarTitle {
-            margin-top: 0;
-            margin-bottom: 20px;
-            color: #2d3748;
-            font-size: 1.6em;
-            font-weight: 600;
-        }
-
-        #modalCustomizationOptions label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-            margin-top: 15px;
-        }
-        #modalCustomizationOptions select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            margin-bottom: 15px;
-            font-size: 0.95em;
-        }
-        .color-swatches {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
             flex-wrap: wrap;
         }
-        .color-swatches span {
+        
+        .spec-item {
+            border-left: 2px solid #e74c3c;
+            padding-left: 15px;
+        }
+
+        .spec-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .spec-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+        }
+
+        .cta-button {
             display: inline-block;
-            width: 35px;
-            height: 35px;
+            padding: 14px 32px;
+            border: 2px solid #fff;
+            background-color: transparent;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        
+        .side-navigation {
+            position: fixed;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.4);
             border-radius: 50%;
             cursor: pointer;
-            border: 3px solid transparent;
-            transition: border-color 0.2s, transform 0.2s;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        .color-swatches span:hover {
-            transform: scale(1.1);
+        .nav-dot:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.2);
         }
-        .color-swatches span.selected {
-            border-color: #007bff; 
-            box-shadow: 0 0 8px rgba(0,123,255,0.5);
-        }
-
-        .modal-order-button {
-            background-color: #28a745; 
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 500;
-            display: block;
-            margin-top: 25px;
-            min-width: 150px;
-            text-align: center;
-            transition: background-color 0.2s ease;
-        }
-        .modal-order-button:hover {
-            background-color: #218838;
-        }
-
-        .message-box {
-            position: fixed;
-            z-index: 2000; 
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex; 
-            align-items: center;
-            justify-content: center;
-        }
-        .message-box-content {
+        .nav-dot.active {
             background-color: #fff;
-            padding: 25px 35px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            text-align: center;
-            min-width: 320px;
-            max-width: 90%;
+            transform: scale(1.4);
         }
-        #messageBoxText {
-            margin-bottom: 20px;
-            font-size: 1.1em;
-            line-height: 1.5;
-            color: #333;
-        }
-        #messageBoxOkButton {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.2s ease;
-        }
-        #messageBoxOkButton:hover {
-            background-color: #0056b3;
-        }
-
-
-        @media (max-width: 768px) {
-            .car-card {
-                grid-template-columns: 1fr; 
-            }
-
-            .car-image-container img {
-                max-height: 280px; 
-            }
-
-            .car-info {
-                padding: 20px;
-            }
-
-            .car-title {
-                font-size: 1.5em;
-            }
-
-            .car-description {
-                font-size: 0.9em;
-            }
-            
-            .car-actions-container {
-                align-items: stretch; 
-                width: 100%;
-            }
-
-            .order-now {
-                 width: 100%; 
-                 padding: 12px 15px;
-            }
-
-            .keep-informed {
-                text-align: center; 
-                margin-top: 4px; 
-            }
-            .modal-content {
-                margin: 20% auto;
-                padding: 20px;
-                width: 90%;
-            }
-            #modalCarTitle {
-                font-size: 1.3em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .car-title {
-                font-size: 1.3em;
-            }
-            .car-info {
-                padding: 15px;
-            }
-            .modal-content {
-                margin: 25% auto;
-                padding: 15px;
-            }
-             #modalCarTitle {
-                font-size: 1.2em;
-            }
-            .color-swatches span {
-                width: 30px;
-                height: 30px;
-            }
-        }
-
     </style>
 </head>
 <body>
-    <?php 
-    if (file_exists(__DIR__ . '/../inc/navbar.php')) {
-        include __DIR__ . '/../inc/navbar.php'; 
-    } else {
-    }
-    ?>
 
-    <div class="page-container">
-        <?php foreach ($cars as $car): ?>
-            <div class="car-card">
-                <div class="car-image-container">
-                    <img src="<?php echo htmlspecialchars($car['image']); ?>" alt="<?php echo htmlspecialchars($car['alt_text']); ?>" onerror="this.onerror=null;this.src='https://placehold.co/800x600/cccccc/ffffff?text=Image+Not+Found';">
-                </div>
-                <div class="car-info">
-                    <div class="car-info-main"> 
-                        <h2 class="car-title"><?php echo htmlspecialchars($car['title']); ?></h2>
-                        <p class="car-description"><?php echo htmlspecialchars($car['description']); ?></p>
-                    </div>
-                    <div class="car-actions-container">
-                        <button class="order-now">Order Now</button>
-                        <a href="#" class="keep-informed">&gt; Keep me informed</a>
-                    </div>
-                </div>
-            </div>
+    <?php 
+        if (file_exists("../inc/navbar.php")) { 
+            include "../inc/navbar.php";
+        }
+        
+        $hypercars = [
+            [
+                'id' => 'hennessey',
+                'brand' => 'Hennessey',
+                'name' => 'Venom F5',
+                'description' => 'An American-built hypercar engineered to be the absolute fastest road car on earth, targeting speeds beyond 300 mph.',
+                'image' => 'assets/hypercars/VenomF5.jpeg',
+                'specs' => [
+                    'HP' => '1,817',
+                    '0-60' => '< 2.6s',
+                    'Top Speed' => '311+ mph'
+                ]
+            ],
+            [
+                'id' => 'ferrari',
+                'brand' => 'Ferrari',
+                'name' => 'LaFerrari',
+                'description' => 'The definitive hybrid hypercar, combining a V12 with F1-derived KERS technology for instantaneous, breathtaking performance.',
+                'image' => 'assets/hypercars/LaFerrari.webp',
+                'specs' => [
+                    'HP' => '950',
+                    '0-60' => '< 3.0s',
+                    'Top Speed' => '217+ mph'
+                ]
+            ],
+            [
+                'id' => 'astonmartin',
+                'brand' => 'Aston Martin',
+                'name' => 'Valkyrie',
+                'description' => 'A road-legal masterpiece co-developed with Red Bull Advanced Technologies, delivering a true Formula 1 experience.',
+                'image' => 'assets/hypercars/AstonMartinValk.jpg',
+                'specs' => [
+                    'HP' => '1,160',
+                    '0-60' => '2.5s',
+                    'Top Speed' => '250 mph'
+                ]
+            ],
+        ];
+    ?>
+    
+    <nav class="side-navigation" id="sideNav">
+        <?php foreach($hypercars as $car): ?>
+            <a href="#<?php echo htmlspecialchars($car['id']); ?>" class="nav-dot" data-target="<?php echo htmlspecialchars($car['id']); ?>"></a>
         <?php endforeach; ?>
-    </div>
-
-    <?php 
-    if (file_exists(__DIR__ . '/../inc/news.php')) {
-        include __DIR__ . '/../inc/news.php'; 
-    }
-    ?>
-
-    <?php 
-    if (file_exists(__DIR__ . '/../inc/footer.php')) {
-        include __DIR__ . '/../inc/footer.php'; 
-    }
-    ?>
-
-    <div id="customizationModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-button">&times;</span>
-            <h3 id="modalCarTitle">Customize Car</h3>
-            <div id="modalCustomizationOptions">
-                <div>
-                    <label for="color-select">Choose Color:</label>
-                    <div class="color-swatches">
-                        <span style="background-color: #DC143C;" data-color="Crimson Red" title="Crimson Red"></span>
-                        <span style="background-color: #00008B;" data-color="Dark Blue" title="Dark Blue"></span>
-                        <span style="background-color: #000000;" data-color="Gloss Black" title="Gloss Black"></span>
-                        <span style="background-color: #C0C0C0;" data-color="Silver Metallic" title="Silver Metallic"></span>
-                        <span style="background-color: #FFD700;" data-color="Gold" title="Gold"></span>
-                        <span style="background-color: #F5F5F5; border: 1px solid #ddd;" data-color="Pearl White" title="Pearl White"></span>
+    </nav>
+    
+    <main class="car-showcase-container">
+        <?php foreach($hypercars as $car): ?>
+            <section id="<?php echo htmlspecialchars($car['id']); ?>" class="car-section">
+                <div class="background-image" style="background-image: url('<?php echo htmlspecialchars($car['image']); ?>');"></div>
+                <div class="car-content">
+                    <p class="car-brand"><?php echo htmlspecialchars($car['brand']); ?></p>
+                    <h1 class="car-title"><?php echo htmlspecialchars($car['name']); ?></h1>
+                    <p class="car-description"><?php echo htmlspecialchars($car['description']); ?></p>
+                    <div class="car-specs">
+                        <div class="spec-item">
+                            <div class="spec-value"><?php echo htmlspecialchars($car['specs']['HP']); ?></div>
+                            <div class="spec-label">Horsepower</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-value"><?php echo htmlspecialchars($car['specs']['0-60']); ?></div>
+                            <div class="spec-label">0-60 MPH</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-value"><?php echo htmlspecialchars($car['specs']['Top Speed']); ?></div>
+                            <div class="spec-label">Top Speed</div>
+                        </div>
                     </div>
+                    <a href="../contact.php" class="cta-button">Inquire Now</a>
                 </div>
-                <div>
-                    <label for="wheel-select">Choose Wheels:</label>
-                    <select id="wheel-select" name="wheels">
-                        <option value="standard_alloy">Standard Alloy</option>
-                        <option value="sport_rims_black">Sport Rims (Black)</option>
-                        <option value="carbon_fiber_elite">Carbon Fiber Elite</option>
-                        <option value="vintage_spoke">Vintage Spoke</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="interior-select">Interior Trim:</label>
-                    <select id="interior-select" name="interior">
-                        <option value="leather_black">Black Leather</option>
-                        <option value="alcantara_red_stitching">Alcantara (Red Stitching)</option>
-                        <option value="wood_grain_classic">Wood Grain Classic</option>
-                        <option value="carbon_fiber_sport">Carbon Fiber Sport</option>
-                    </select>
-                </div>
-            </div>
-            <button class="modal-order-button">Confirm Customization</button>
-        </div>
-    </div>
+            </section>
+        <?php endforeach; ?>
+    </main>
 
-    <div id="customMessageBox" class="message-box" style="display:none;">
-        <div class="message-box-content">
-            <p id="messageBoxText"></p>
-            <button id="messageBoxOkButton">OK</button>
-        </div>
-    </div>
-
+    <?php 
+        if (file_exists("../inc/footer.php")) { 
+            include "../inc/footer.php";
+        }
+    ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('customizationModal');
-            const openModalButtons = document.querySelectorAll('.order-now');
-            const closeModalButton = modal.querySelector('.modal-close-button');
-            const modalCarTitle = document.getElementById('modalCarTitle');
-            const modalCustomizationOptions = document.getElementById('modalCustomizationOptions');
-            const modalOrderButton = modal.querySelector('.modal-order-button');
-            const messageBox = document.getElementById('customMessageBox');
-            const messageBoxText = document.getElementById('messageBoxText');
-            const messageBoxOkButton = document.getElementById('messageBoxOkButton');
+            const sections = document.querySelectorAll('.car-section');
+            const navDots = document.querySelectorAll('.nav-dot');
 
-            function showCustomMessage(message) {
-                messageBoxText.innerHTML = message.replace(/\\n/g, '<br>');
-                messageBox.style.display = 'flex';
-            }
+            const observerOptions = {
+                root: document.querySelector('.car-showcase-container'),
+                rootMargin: '0px',
+                threshold: 0.6 
+            };
 
-            if (messageBoxOkButton) {
-                messageBoxOkButton.addEventListener('click', function() {
-                    messageBox.style.display = 'none';
-                });
-            }
-            
-            openModalButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const carCard = this.closest('.car-card');
-                    const carTitleText = carCard.querySelector('.car-title').textContent;
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    const sectionId = entry.target.id;
+                    const correspondingDot = document.querySelector(`.nav-dot[data-target="${sectionId}"]`);
                     
-                    modalCarTitle.textContent = 'Customize: ' + carTitleText;
-                    
-                    modalCustomizationOptions.querySelectorAll('.color-swatches span.selected').forEach(s => s.classList.remove('selected'));
-                    modalCustomizationOptions.querySelector('#wheel-select').selectedIndex = 0;
-                    modalCustomizationOptions.querySelector('#interior-select').selectedIndex = 0;
-
-                    modal.style.display = 'block';
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        if (correspondingDot) {
+                            navDots.forEach(dot => dot.classList.remove('active'));
+                            correspondingDot.classList.add('active');
+                        }
+                    } else {
+                         entry.target.classList.remove('is-visible');
+                    }
                 });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
             });
-
-            if (closeModalButton) {
-                closeModalButton.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                });
-            }
-
-            window.addEventListener('click', function(event) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
-                }
-                if (event.target == messageBox) { 
-                    messageBox.style.display = 'none';
-                }
-            });
-
-            modalCustomizationOptions.querySelectorAll('.color-swatches span').forEach(swatch => {
-                swatch.addEventListener('click', function() {
-                    modalCustomizationOptions.querySelectorAll('.color-swatches span.selected').forEach(s => s.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
-
-            if (modalOrderButton) {
-                modalOrderButton.addEventListener('click', function() {
-                    const selectedColorSwatch = modalCustomizationOptions.querySelector('.color-swatches span.selected');
-                    const selectedColor = selectedColorSwatch ? selectedColorSwatch.dataset.color : 'Not selected';
-                    const selectedWheels = modalCustomizationOptions.querySelector('#wheel-select').value;
-                    const selectedInterior = modalCustomizationOptions.querySelector('#interior-select').value;
-                    const carBeingCustomized = modalCarTitle.textContent.replace('Customize: ', '');
-
-                    showCustomMessage(
-                        'Customization Confirmed for: ' + carBeingCustomized +
-                        '\\nColor: ' + selectedColor +
-                        '\\nWheels: ' + selectedWheels.replace(/_/g, ' ') + 
-                        '\\nInterior: ' + selectedInterior.replace(/_/g, ' ')
-                    );
-                    modal.style.display = 'none'; 
-                });
-            }
         });
     </script>
 </body>

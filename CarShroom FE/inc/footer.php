@@ -152,8 +152,8 @@
             <div class="footer-column">
                 <h3>Customer Service</h3>
                 <ul>
-                    <li><a href="#">5-Year star service</a></li>
-                    <li><a href="#">24 Hour Roadside Assitance</a></li>
+                    <li><a href="/CarShroom%20FE/service.php">Service</a></li>
+                    <li><a href="/CarShroom%20FE/roadsideassistance.php">24 Hour Roadside Assitance</a></li>
                 </ul>
             </div>
 

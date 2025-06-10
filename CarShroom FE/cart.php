@@ -121,8 +121,7 @@
         .cart-item-quantity input[type=number] {
           -moz-appearance: textfield; 
         }
-
-
+        
         .cart-item-actions .item-price {
             font-size: 1.1em;
             font-weight: 600;
