@@ -254,7 +254,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Corrected coordinates to match the provided map image
             const locations = [
                 { id: 1, name: 'CarShroom Jakarta Central', address: '123 Sudirman Avenue, SCBD, Jakarta, Indonesia', phone: '+62 21 555 0101', hours: 'Mon-Sat: 9am - 7pm, Sun: 11am - 5pm', lat: 70, lng: 22 },
                 { id: 2, name: 'CarShroom Surabaya Prestige', address: '456 Basuki Rahmat St, Surabaya, Indonesia', phone: '+62 31 555 0202', hours: 'Mon-Sat: 10am - 8pm, Sun: 12pm - 6pm', lat: 73, lng: 30 },
@@ -318,7 +317,6 @@
             function setActiveLocation(id) {
                 if (!id) return;
                 
-                // If clicking the currently active location, reset the view
                 if (id === activeLocationId) {
                     resetView();
                     return;
@@ -380,7 +378,6 @@
 
             resetBtn.addEventListener('click', resetView);
 
-            // Initial render
             renderLocations();
         });
     </script>
