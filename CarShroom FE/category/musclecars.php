@@ -132,7 +132,6 @@ $cars = [
             text-decoration: underline;
         }
 
-        /* Modal Styles */
         .modal {
             display: none; 
             position: fixed; 
@@ -159,7 +158,7 @@ $cars = [
 
         .modal-close-button {
             color: #aaa;
-            float: right; /* Old way, using absolute positioning is better */
+            float: right; 
             font-size: 28px;
             font-weight: bold;
             position: absolute;
@@ -216,7 +215,7 @@ $cars = [
             transform: scale(1.1);
         }
         .color-swatches span.selected {
-            border-color: #007bff; /* Highlight selected color */
+            border-color: #007bff; 
             box-shadow: 0 0 8px rgba(0,123,255,0.5);
         }
 
@@ -239,16 +238,15 @@ $cars = [
             background-color: #218838;
         }
 
-        /* Custom Message Box Styles */
         .message-box {
             position: fixed;
-            z-index: 2000; /* Higher than modal */
+            z-index: 2000; 
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
-            display: flex; /* Used to center content */
+            display: flex; 
             align-items: center;
             justify-content: center;
         }

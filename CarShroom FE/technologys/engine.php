@@ -1,6 +1,3 @@
-<?php
-// Product data is now fetched from the Go backend via JavaScript.
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -275,10 +272,7 @@
                 products.forEach(product => {
                     const productCard = document.createElement('div');
                     productCard.classList.add('engine-product-card');
-
-                    // The path from the database (e.g., 'assets/engine/image.jpg') is treated
-                    // as relative to the current file (engine.php). Since both are in 'technologys',
-                    // this path is now correct.
+                    
                     const imagePath = product.image_url || 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
 
                     productCard.innerHTML = `

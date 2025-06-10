@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us - CarShroom</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         html {
             box-sizing: border-box;
+            scroll-behavior: smooth;
         }
         *, *:before, *:after {
             box-sizing: inherit;
@@ -18,336 +19,203 @@
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
-            background-color: #ffffff;
-            color: #333333;
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden; 
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.7;
+            overflow-x: hidden;
         }
 
         main {
-            flex-grow: 1;
+            padding-bottom: 80px;
         }
         
-        .contact-banner {
-            height: 60vh;
-            min-height: 400px;
-            background-image: url('./assets/Contact Us.jpg'); 
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; 
-            justify-content: center;
+        .contact-hero {
+            height: 65vh;
+            min-height: 500px;
             position: relative;
-            color: #ffffff;
-            padding: 0 5%; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            background: url('./assets/Contact Us.jpg') no-repeat center center/cover;
         }
-
-        .contact-banner::before {
+        .contact-hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.3); 
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6));
         }
-
-        .contact-banner-title-main {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.8em; 
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .hero-content {
             position: relative;
             z-index: 1;
-            margin-bottom: 5px;
-            color: #dddddd;
+        }
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 7vw, 5rem);
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .contact-wrapper {
+            max-width: 1200px;
+            margin: -80px auto 0 auto;
+            position: relative;
+            z-index: 2;
+            padding: 0 20px;
         }
         
-        .contact-banner-title-sub {
-            font-family: 'Space Mono', monospace; 
-            font-size: 3.5em;
-            font-weight: 700;
-            position: relative;
-            z-index: 1;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-            line-height: 1.1;
-        }
-
-        .contact-content-section {
-            padding: 60px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
         .contact-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            align-items: flex-start; 
-        }
-        
-        .contact-grid-item {
-            background-color: #f9f9f9; 
-            padding: 0; 
-            border-radius: 8px;
-            overflow: hidden; 
-        }
-        
-        .contact-grid-item.text-only {
-             background-color: transparent;
-             padding: 0;
+            gap: 30px;
         }
 
-        .contact-grid-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            max-height: 300px; 
-            object-fit: cover;
+        .contact-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 35px 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
         }
-        
-        .contact-item-content {
-            padding: 25px;
-        }
-
-        .contact-grid-item h2 {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #000000;
-            margin-bottom: 15px;
-        }
-
-        .contact-grid-item p {
-            font-size: 0.95em;
-            color: #555555;
-            margin-bottom: 15px;
-            text-align: left; 
-        }
-         .contact-grid-item p.phone-details {
-            font-size: 1.1em;
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        .contact-grid-item p.hours-details {
-            font-size: 0.9em;
-            color: #7f8c8d;
-        }
-
-        .contact-button {
-            display: inline-block;
-            background-color: #34495e; 
-            color: #ffffff;
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 500;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .contact-button:hover {
-            background-color: #2c3e50; 
-        }
-        
-        .customer-care-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+        .contact-card .icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 20px auto;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
-            margin-bottom: 60px;
+            justify-content: center;
         }
-        .customer-care-section .text-content {
-             padding-right: 20px;
+        .contact-card .icon svg {
+            width: 24px;
+            height: 24px;
         }
-         .customer-care-section img {
+        .contact-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .contact-card p {
+            color: #6c757d;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+        .contact-card a.contact-link {
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #3498db;
+            text-decoration: none;
+            display: block;
+            transition: color 0.2s ease;
+        }
+        .contact-card a.contact-link:hover {
+            color: #2980b9;
+        }
+        
+        .contact-button {
+            padding: 12px 28px;
+            background: #34495e;
+            color: #fff;
+            border: none;
             border-radius: 8px;
-            width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: cover;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
-
+        .contact-button:hover {
+            background: #2c3e50;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
         .sidebar-form-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.5);
             z-index: 1999; 
             display: none; 
         }
-
         .sidebar-form {
-            height: 100%;
-            width: 0; 
-            position: fixed;
-            z-index: 2000;
-            top: 0;
-            right: 0;
-            background-color: #ffffff;
-            overflow-x: hidden;
-            transition: 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            padding-top: 20px; 
-            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+            height: 100%; width: 0; position: fixed; z-index: 2000;
+            top: 0; right: 0; background-color: #ffffff; overflow-x: hidden;
+            transition: 0.5s; padding-top: 60px; box-shadow: -5px 0 15px rgba(0,0,0,0.2);
         }
-
-        .sidebar-form.open {
-            width: 400px; 
-        }
+        .sidebar-form.open { width: 400px; }
+        .sidebar-form-content { padding: 20px 30px; height: 100%; overflow-y: auto; }
+        .sidebar-form .close-btn { position: absolute; top: 15px; right: 25px; font-size: 36px; text-decoration: none; color: #888; }
+        .sidebar-form h3 { font-family: 'Space Mono', monospace; font-size: 1.6em; margin-bottom: 25px; }
+        .sidebar-form .form-group { margin-bottom: 20px; position: relative; } 
+        .sidebar-form label { display: block; margin-bottom: 6px; font-size: 0.9em; color: #555; }
+        .sidebar-form input, .sidebar-form textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.95em; }
+        .sidebar-form textarea { min-height: 120px; resize: vertical; }
+        .sidebar-form input.invalid, .sidebar-form textarea.invalid { border-color: #e74c3c; } 
         
-        .sidebar-form-content {
-            padding: 20px 30px;
-        }
-
-        .sidebar-form .close-btn {
+        .validation-message {
             position: absolute;
-            top: 15px;
-            right: 25px;
-            font-size: 30px;
-            margin-left: 50px;
-            color: #888;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .sidebar-form .close-btn:hover {
-            color: #000;
-        }
-
-        .sidebar-form h3 {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.6em;
-            color: #333;
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .sidebar-form .form-group {
-            margin-bottom: 20px;
-        }
-
-        .sidebar-form label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.9em;
-            color: #555;
-            font-weight: 500;
-        }
-
-        .sidebar-form input[type="text"],
-        .sidebar-form input[type="email"],
-        .sidebar-form input[type="tel"],
-        .sidebar-form textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.95em;
-            font-family: 'Inter', sans-serif;
-        }
-         .sidebar-form textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .sidebar-form .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        .sidebar-form .checkbox-group input[type="checkbox"] {
-            margin-right: 10px;
-            width: 16px;
-            height: 16px;
-            accent-color: #34495e;
-        }
-         .sidebar-form .checkbox-group label {
-            margin-bottom: 0;
-            font-size: 0.85em;
-            color: #666;
-         }
-
-        .sidebar-form .submit-button {
-            background-color: #34495e;
+            bottom: 100%;
+            left: 0;
+            background-color: #e74c3c;
             color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
             font-weight: 500;
-            width: 100%;
-            transition: background-color 0.3s ease;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
-        .sidebar-form .submit-button:hover {
-            background-color: #2c3e50;
+        .validation-message::after { 
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 15px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #e74c3c transparent transparent transparent;
+        }
+        .validation-message.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
+        .sidebar-form .checkbox-group { 
+            display: flex; 
+            align-items: center; 
+            margin-top: 5px; 
+        }
+        .sidebar-form .checkbox-group input { 
+            width: auto; 
+            margin-right: 10px; 
+            flex-shrink: 0; 
+        }
+        .sidebar-form .checkbox-group label {
+            margin-bottom: 0; 
+            line-height: 1.2; 
+        }
+
+        .sidebar-form .submit-button { background-color: #34495e; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1em; }
+        .sidebar-form .submit-button:hover { background-color: #2c3e50; }
 
         @media (max-width: 992px) {
-            .customer-care-section {
+            .contact-grid {
                 grid-template-columns: 1fr;
             }
-             .customer-care-section .text-content {
-                 padding-right: 0;
-                 margin-bottom: 30px;
-            }
         }
-
-        @media (max-width: 768px) {
-            .contact-banner {
-                height: 50vh;
-                min-height: 350px;
-                padding: 0 5%;
-            }
-            .contact-banner-title-main {
-                font-size: 1.5em;
-            }
-            .contact-banner-title-sub {
-                font-size: 2.8em;
-            }
-            .contact-grid-item h2 {
-                font-size: 1.3em;
-            }
-             .contact-grid {
-                gap: 25px;
-            }
-            .sidebar-form.open {
-                width: 320px; 
-            }
-        }
-
         @media (max-width: 480px) {
-            .contact-banner-title-main {
-                font-size: 1.2em;
-            }
-            .contact-banner-title-sub {
-                font-size: 2.2em;
-            }
-            .contact-item-content {
-                padding: 20px;
-            }
-            .sidebar-form.open {
-                width: 100%; 
-                padding-top: 10px;
-            }
-            .sidebar-form-content {
-                padding: 15px 20px;
-            }
-            .sidebar-form h3 {
-                font-size: 1.4em;
-            }
+            .sidebar-form.open { width: 100%; }
         }
+
     </style>
 </head>
 <body>
@@ -357,38 +225,31 @@
         }
     ?>
 
-    <header class="contact-banner">
-        <span class="contact-banner-title-main">CONTACT US</span>
-        <h1 class="contact-banner-title-sub">CUSTOMER CARE</h1>
+    <header class="contact-hero">
+        <div class="hero-content">
+            <h1>Get in Touch</h1>
+            <p>Our team is ready to provide you with a world-class experience.</p>
+        </div>
     </header>
 
     <main>
-        <section class="contact-content-section">
-            <div class="customer-care-section">
-                <div class="text-content">
-                    <h2>CARSHROOM CUSTOMER CARE</h2>
-                    <p>CarShroom is committed to providing you with an exceptional customer experience across multiple channels. Whether you're exploring our wide selection of premium vehicles or need assistance with purchase or service, we're here to help. At CarShroom, we're passionate about driving your satisfaction and ensuring every interaction is as smooth as the ride in your dream car. Let us know how we can assist you today!</p>
-                </div>
-                <img src="./assets/Dealer 2.jpeg" alt="CarShroom Customer Care Area">
-            </div>
-
+        <div class="contact-wrapper">
             <div class="contact-grid">
-                <div class="contact-grid-item text-only">
-                    <div class="contact-item-content">
-                        <h2>MAKE A CALL</h2>
-                        <p class="phone-details">phone: 0812-3456-7890</p>
-                        <p class="hours-details">Monday to Friday</p>
-                        <p class="hours-details" style="margin-bottom:0;">8:00am to 7:00pm</p>
+                <div class="contact-card">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                     </div>
+                    <h2>Make a Call</h2>
+                    <p>Our dedicated sales and support team is available during business hours to answer any questions.</p>
+                    <a href="tel:+62215550101" class="contact-link">+62 21 555 0101</a>
                 </div>
-                
-                <div class="contact-grid-item">
-                     <img src="./assets/Car Dealership Contact Us 1.jpg" alt="Send a Message Visual">
-                    <div class="contact-item-content">
-                        <h2>SEND A MESSAGE</h2>
-                        <p>CarShroom is committed to providing you with an exceptional customer experience across multiple channels. Whether you're exploring our wide selection of premium vehicles or need assistance with purchase or service, we're here to help. At CarShroom, we're passionate about driving your satisfaction and ensuring every interaction is as smooth as the ride in your dream car. Let us know how we can assist you today!</p>
-                        <button type="button" class="contact-button" id="openSidebarForm">Send A Message</button>
+                <div class="contact-card">
+                     <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                     </div>
+                    <h2>Send a Message</h2>
+                    <p>For inquiries, press, or customer care, please click below to send us a detailed message.</p>
+                    <button type="button" class="contact-button" id="openSidebarForm">Send A Message</button>
                 </div>
             </div>
         </section>
@@ -399,7 +260,7 @@
         <div class="sidebar-form-content">
             <a href="javascript:void(0)" class="close-btn" id="closeSidebarForm">&times;</a>
             <h3>Send Us A Message</h3>
-            <form action="#" method="POST">
+            <form id="contactForm" action="#" method="POST" novalidate>
                 <div class="form-group">
                     <label for="formName">Name*</label>
                     <input type="text" id="formName" name="name" required>
@@ -439,7 +300,6 @@
             include "inc/news.php";
         }
     ?>
-
     <?php 
         if (file_exists("inc/footer.php")) {
             include "inc/footer.php";
@@ -452,29 +312,65 @@
             const closeButton = document.getElementById('closeSidebarForm');
             const sidebar = document.getElementById('messageSidebar');
             const overlay = document.getElementById('sidebarFormOverlay');
+            const contactForm = document.getElementById('contactForm');
 
             if (openButton && sidebar && overlay) {
                 openButton.addEventListener('click', function (event) {
                     event.preventDefault(); 
                     sidebar.classList.add('open');
                     overlay.style.display = 'block';
-                    document.body.style.overflowX = 'hidden'; 
+                    document.body.style.overflow = 'hidden'; 
                 });
             }
 
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                overlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
             if (closeButton && sidebar && overlay) {
-                closeButton.addEventListener('click', function () {
-                    sidebar.classList.remove('open');
-                    overlay.style.display = 'none';
-                    document.body.style.overflowX = 'auto';
-                });
+                closeButton.addEventListener('click', closeSidebar);
             }
             
             if (overlay) {
-                overlay.addEventListener('click', function () {
-                    sidebar.classList.remove('open');
-                    overlay.style.display = 'none';
-                    document.body.style.overflowX = 'auto';
+                overlay.addEventListener('click', closeSidebar);
+            }
+            
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && sidebar.classList.contains('open')) {
+                    closeSidebar();
+                }
+            });
+
+            if (contactForm) {
+                contactForm.querySelectorAll('[required]').forEach(input => {
+                    const validationMessage = document.createElement('div');
+                    validationMessage.className = 'validation-message';
+                    input.parentElement.appendChild(validationMessage);
+                    
+                    input.addEventListener('invalid', function(event) {
+                        event.preventDefault(); 
+                        this.classList.add('invalid');
+                        validationMessage.textContent = this.validationMessage;
+                        validationMessage.classList.add('visible');
+                    });
+                    
+                    input.addEventListener('input', function(event) {
+                        if (this.validity.valid) {
+                            this.classList.remove('invalid');
+                            validationMessage.classList.remove('visible');
+                        }
+                    });
+                });
+
+                contactForm.addEventListener('submit', function(event) {
+                    if (!this.checkValidity()) {
+                        event.preventDefault();
+                        this.querySelector('.invalid').focus();
+                    } else {
+                        alert('Form submitted successfully!');
+                    }
                 });
             }
         });

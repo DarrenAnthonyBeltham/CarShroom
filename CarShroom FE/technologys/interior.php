@@ -1,6 +1,3 @@
-<?php
-// Static $interior_products array is removed. Data will now be fetched via JavaScript.
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -5,7 +5,6 @@
         font-family: 'Space Mono', monospace;
         color: #000000; 
         background-color: #ffffff;
-        margin-top: 50px;
         margin-bottom: 30px;
         padding: 40px 20px 20px 20px; 
         font-size: 14px; 

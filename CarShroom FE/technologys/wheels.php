@@ -1,6 +1,3 @@
-<?php
-// Product data is now fetched from the Go backend via JavaScript.
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
