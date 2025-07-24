@@ -38,18 +38,6 @@ This project leverages a modern tech stack to deliver a high-performance and sca
 
 ---
 
-## Setup and Running
-
-To run this project on your local machine, you will need to set up both the frontend and backend environments.
-
-### Frontend Setup
-
-1.  **Web Server:** You need a local web server with PHP support, such as **XAMPP**, **MAMP**, or **WampServer**.
-2.  **Directory:** Place the `CarShroom FE` folder inside your web server's public directory (e.g., `htdocs` for XAMPP).
-3.  **Run:** Start your web server and navigate to the project URL in your browser (e.g., `http://localhost/CarShroom FE/` or `http://localhost:3000/CarShroom FE/` depending on your setup).
-
----
-
 ## Key Features
 
 -   **Dynamic Product Pages:** Separate, beautifully designed pages for different technology categories (Wheels, Brakes, Engines, etc.) that fetch data from the Go backend.
