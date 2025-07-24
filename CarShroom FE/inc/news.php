@@ -2,7 +2,7 @@
         <h1>Newsletter</h1>
         <p>Stay up to date with the latest news from CarShroom.</p>
         <button>
-            <a href="../newsletter.php" style="color: #fff; text-decoration: none;">Subscribe</a>
+            <a href="/CarShroom FE/newsletter.php" style="color: #fff; text-decoration: none;">Subscribe</a>
         </button>
     </div>
 
